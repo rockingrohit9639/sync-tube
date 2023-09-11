@@ -1,48 +1,55 @@
-import { int, timestamp, mysqlTable, primaryKey, varchar, text } from 'drizzle-orm/mysql-core'
+import { timestamp, pgTable, text, primaryKey, integer } from 'drizzle-orm/pg-core'
 import type { AdapterAccount } from '@auth/core/adapters'
+import { createInsertSchema } from 'drizzle-zod'
+import { z } from 'zod'
 
-export const users = mysqlTable('user', {
-  id: varchar('id', { length: 255 }).notNull().primaryKey(),
-  name: varchar('name', { length: 255 }),
-  email: varchar('email', { length: 255 }).notNull(),
-  emailVerified: timestamp('emailVerified', {
-    mode: 'date',
-    fsp: 3,
-  }).defaultNow(),
-  image: varchar('image', { length: 255 }),
+export const users = pgTable('user', {
+  id: text('id').notNull().primaryKey(),
+  name: text('name'),
+  email: text('email').notNull(),
+  emailVerified: timestamp('emailVerified', { mode: 'date' }),
+  image: text('image'),
+  role: text('role', { enum: ['YOUTUBER', 'EDITOR'] }).notNull(),
 })
 
-export const accounts = mysqlTable(
+export const createUserSchema = createInsertSchema(users)
+export type User = z.infer<typeof createUserSchema>
+
+export const accounts = pgTable(
   'account',
   {
-    userId: varchar('userId', { length: 255 }).notNull(),
-    type: varchar('type', { length: 255 }).$type<AdapterAccount['type']>().notNull(),
-    provider: varchar('provider', { length: 255 }).notNull(),
-    providerAccountId: varchar('providerAccountId', { length: 255 }).notNull(),
-    refresh_token: varchar('refresh_token', { length: 255 }),
-    access_token: varchar('access_token', { length: 255 }),
-    expires_at: int('expires_at'),
-    token_type: varchar('token_type', { length: 255 }),
-    scope: varchar('scope', { length: 255 }),
+    userId: text('userId')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    type: text('type').$type<AdapterAccount['type']>().notNull(),
+    provider: text('provider').notNull(),
+    providerAccountId: text('providerAccountId').notNull(),
+    refresh_token: text('refresh_token'),
+    access_token: text('access_token'),
+    expires_at: integer('expires_at'),
+    token_type: text('token_type'),
+    scope: text('scope'),
     id_token: text('id_token'),
-    session_state: varchar('session_state', { length: 255 }),
+    session_state: text('session_state'),
   },
   (account) => ({
     compoundKey: primaryKey(account.provider, account.providerAccountId),
   }),
 )
 
-export const sessions = mysqlTable('session', {
-  sessionToken: varchar('sessionToken', { length: 255 }).notNull().primaryKey(),
-  userId: varchar('userId', { length: 255 }).notNull(),
+export const sessions = pgTable('session', {
+  sessionToken: text('sessionToken').notNull().primaryKey(),
+  userId: text('userId')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
   expires: timestamp('expires', { mode: 'date' }).notNull(),
 })
 
-export const verificationTokens = mysqlTable(
+export const verificationTokens = pgTable(
   'verificationToken',
   {
-    identifier: varchar('identifier', { length: 255 }).notNull(),
-    token: varchar('token', { length: 255 }).notNull(),
+    identifier: text('identifier').notNull(),
+    token: text('token').notNull(),
     expires: timestamp('expires', { mode: 'date' }).notNull(),
   },
   (vt) => ({

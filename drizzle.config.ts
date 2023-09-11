@@ -4,7 +4,7 @@ import 'dotenv/config'
 export default {
   schema: './src/db/schema',
   out: './src/db/migrations',
-  driver: 'mysql2',
+  driver: 'pg',
   dbCredentials: {
     connectionString: process.env.DATABASE_URL!,
   },

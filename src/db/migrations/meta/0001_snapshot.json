@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "45e9c952-22d6-4d89-8ad1-f6204d2fc044",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "51135275-19bb-4f1b-b23d-9ddbc249e453",
+  "prevId": "45e9c952-22d6-4d89-8ad1-f6204d2fc044",
   "tables": {
     "account": {
       "name": "account",
@@ -177,6 +177,12 @@
           "type": "text",
           "primaryKey": false,
           "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},

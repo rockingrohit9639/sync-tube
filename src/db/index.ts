@@ -1,10 +1,15 @@
-import { drizzle } from 'drizzle-orm/planetscale-serverless'
-import { connect } from '@planetscale/database'
+import { type PostgresJsDatabase, drizzle } from 'drizzle-orm/postgres-js'
+import postgres from 'postgres'
 import 'dotenv/config'
 
-// create the connection
-const connection = connect({
-  url: process.env.DATABASE_URL!,
-})
+const client = postgres(process.env.DATABASE_URL!)
 
-export const db = drizzle(connection)
+const globalForPrisma = globalThis as unknown as {
+  db: PostgresJsDatabase
+}
+
+export const db = globalForPrisma.db ?? drizzle(client)
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.db = db
+}

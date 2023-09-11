@@ -1,14 +1,20 @@
-import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { DefaultSession, NextAuthOptions } from 'next-auth'
 import NextAuth from 'next-auth/next'
-import GoogleProvider from 'next-auth/providers/google'
 import { db } from '~/db'
+import { type User as UserType } from '~/db/schema/auth'
+import CustomGoogleProvider from '~/lib/auth/custom-google-provider'
+import { DrizzleAdapter } from '~/db/adapter/drizzle.adapter'
 
 declare module 'next-auth' {
   interface Session {
     user: DefaultSession['user'] & {
       id: string
+      role: UserType['role']
     }
+  }
+
+  interface User {
+    role: UserType['role']
   }
 }
 
@@ -16,14 +22,28 @@ export const authOptions: NextAuthOptions = {
   adapter: DrizzleAdapter(db),
   callbacks: {
     session: ({ session, user }) => {
-      session.user.id = user.id
-      return session
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: user.id,
+          role: user.role,
+        },
+      }
     },
   },
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    CustomGoogleProvider({
+      id: 'youtube',
+      name: 'Youtube',
+      role: 'YOUTUBER',
+      redirect_uri: process.env.GOOGLE_YOUTUBE_REDIRECT_URI!,
+    }),
+    CustomGoogleProvider({
+      id: 'editor',
+      name: 'Editor',
+      role: 'EDITOR',
+      redirect_uri: process.env.GOOGLE_EDITOR_REDIRECT_URI!,
     }),
   ],
 }

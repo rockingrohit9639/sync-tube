@@ -1,12 +1,19 @@
 {
   "version": "5",
-  "dialect": "mysql",
+  "dialect": "pg",
   "entries": [
     {
       "idx": 0,
       "version": "5",
-      "when": 1694358375578,
-      "tag": "0000_absurd_gressill",
+      "when": 1694398498405,
+      "tag": "0000_stale_blockbuster",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1694398747057,
+      "tag": "0001_chemical_oracle",
       "breakpoints": true
     }
   ]
