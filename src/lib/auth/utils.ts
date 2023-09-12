@@ -9,5 +9,5 @@ export const getUserAuth = async () => {
 
 export const checkAuth = async () => {
   const { session } = await getUserAuth()
-  if (!session) redirect('/api/auth/signin')
+  if (!session) redirect('/signin')
 }

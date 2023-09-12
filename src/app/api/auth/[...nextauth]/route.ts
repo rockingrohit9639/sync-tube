@@ -19,6 +19,9 @@ declare module 'next-auth' {
 }
 
 export const authOptions: NextAuthOptions = {
+  pages: {
+    signIn: '/signin',
+  },
   adapter: DrizzleAdapter(db),
   callbacks: {
     session: ({ session, user }) => {
