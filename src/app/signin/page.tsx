@@ -27,7 +27,7 @@ export default function Signin() {
 
         <div className="flex flex-col space-y-4">
           <Button
-            className="bg-slate-800 hover:bg-slate-700"
+            className="bg-slate-800 text-gray-100 hover:bg-slate-700"
             onClick={() => {
               signIn('youtube')
             }}
@@ -35,7 +35,7 @@ export default function Signin() {
             Continue as Youtuber
           </Button>
           <Button
-            className="bg-slate-800 hover:bg-slate-700"
+            className="bg-slate-800 text-gray-100 hover:bg-slate-700"
             onClick={() => {
               signIn('editor')
             }}

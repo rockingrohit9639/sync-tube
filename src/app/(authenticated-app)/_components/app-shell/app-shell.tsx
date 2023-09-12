@@ -1,7 +1,13 @@
+'use client'
+
 import Image from 'next/image'
+import { redirect } from 'next/navigation'
+import { signOut, useSession } from 'next-auth/react'
 import { ROUTES } from '~/lib/routes/utils'
 import { cn } from '~/lib/utils'
 import NavLink from '../nav-link'
+import Avatar from '~/components/avatar'
+import Dropdown from '~/components/dropdown'
 
 type AppShellProps = {
   className?: string
@@ -10,6 +16,12 @@ type AppShellProps = {
 }
 
 export default function AppShell({ className, style, children }: AppShellProps) {
+  const { data } = useSession()
+
+  if (!data) {
+    redirect('/signin')
+  }
+
   return (
     <div className={cn(className)} style={style}>
       <div className="fixed left-0 top-0 h-16 w-full border-b bg-black/10 px-4 backdrop-blur-lg">
@@ -29,6 +41,21 @@ export default function AppShell({ className, style, children }: AppShellProps) 
                 {route.name}
               </NavLink>
             ))}
+
+            <Dropdown
+              items={[
+                {
+                  id: 'logout',
+                  label: 'Logout',
+                  onClick: () => {
+                    signOut()
+                  },
+                },
+              ]}
+              label={data.user.name}
+            >
+              <Avatar src={data.user.image}>{data?.user?.name?.[0]}</Avatar>
+            </Dropdown>
           </div>
         </div>
       </div>
