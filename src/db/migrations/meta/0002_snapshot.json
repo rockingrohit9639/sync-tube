@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "16793237-01dc-4f6a-aef4-63eb03a80c4a",
+  "id": "a072f1fa-5aff-4909-b753-0c7ad896b3a1",
   "prevId": "51135275-19bb-4f1b-b23d-9ddbc249e453",
   "tables": {
     "account": {
@@ -232,7 +232,7 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "serial",
           "primaryKey": true,
           "notNull": true
         },

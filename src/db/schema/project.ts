@@ -1,11 +1,11 @@
-import { boolean, pgEnum, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core'
+import { boolean, pgEnum, pgTable, primaryKey, serial, text, timestamp } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 import { users } from './auth'
 
 export const projectStatusEnum = pgEnum('projectStatus', ['ONGOING', 'DONE'])
 
 export const projects = pgTable('projects', {
-  id: text('id').notNull().primaryKey(),
+  id: serial('id').notNull().primaryKey(),
   name: text('name').notNull(),
   description: text('description'),
   admin: text('admin')
@@ -17,6 +17,14 @@ export const projects = pgTable('projects', {
   status: projectStatusEnum('projectStatus'),
   createdAt: timestamp('createdAt', { mode: 'date' }).defaultNow(),
 })
+
+/** Defining one-to-one relation b/w project and user */
+export const projectAdminRelations = relations(projects, ({ one }) => ({
+  admin: one(users, {
+    fields: [projects.id],
+    references: [users.id],
+  }),
+}))
 
 /** Defining many-to-many relation between project and members */
 export const projectRelations = relations(projects, ({ many }) => ({

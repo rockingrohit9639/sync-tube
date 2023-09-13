@@ -40,3 +40,20 @@ const isAuthed = t.middleware((opts) => {
 })
 
 export const protectedProcedure = t.procedure.use(isAuthed)
+
+const isYoutuber = t.middleware((opts) => {
+  const { ctx } = opts
+  if (!ctx.session) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' })
+  }
+
+  if (ctx.session.user.role !== 'YOUTUBER') {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to access this resource!' })
+  }
+
+  return opts.next({
+    ctx: { session: ctx.session },
+  })
+})
+
+export const youtuberProcedure = t.procedure.use(isYoutuber)
