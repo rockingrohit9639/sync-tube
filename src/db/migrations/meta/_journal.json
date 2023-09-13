@@ -15,6 +15,13 @@
       "when": 1694398747057,
       "tag": "0001_chemical_oracle",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1694572419213,
+      "tag": "0002_wakeful_hellfire_club",
+      "breakpoints": true
     }
   ]
 }
