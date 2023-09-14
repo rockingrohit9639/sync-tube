@@ -1,11 +1,11 @@
-import { boolean, pgEnum, pgTable, primaryKey, serial, text, timestamp } from 'drizzle-orm/pg-core'
+import { boolean, integer, pgEnum, pgTable, primaryKey, serial, text, timestamp } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 import { users } from './auth'
 
 export const projectStatusEnum = pgEnum('projectStatus', ['ONGOING', 'DONE'])
 
 export const projects = pgTable('projects', {
-  id: serial('id').notNull().primaryKey(),
+  id: serial('id').primaryKey(),
   name: text('name').notNull(),
   description: text('description'),
   admin: text('admin')
@@ -27,18 +27,10 @@ export const projectAdminRelations = relations(projects, ({ one }) => ({
 }))
 
 /** Defining many-to-many relation between project and members */
-export const projectRelations = relations(projects, ({ many }) => ({
-  projectsToMembers: many(projectsToMembers),
-}))
-
-export const usersRelations = relations(users, ({ many }) => ({
-  projectsToMembers: many(projectsToMembers),
-}))
-
 export const projectsToMembers = pgTable(
   'projects_to_members',
   {
-    projectId: text('projectId')
+    projectId: integer('projectId')
       .notNull()
       .references(() => projects.id),
     memberId: text('memberId')
@@ -49,6 +41,14 @@ export const projectsToMembers = pgTable(
     pk: primaryKey(table.projectId, table.memberId),
   }),
 )
+
+export const projectRelations = relations(projects, ({ many }) => ({
+  projectsToMembers: many(projectsToMembers),
+}))
+
+export const usersRelations = relations(users, ({ many }) => ({
+  projectsToMembers: many(projectsToMembers),
+}))
 
 export const projectsToMembersRelations = relations(projectsToMembers, ({ one }) => ({
   project: one(projects, {

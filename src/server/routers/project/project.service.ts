@@ -8,6 +8,7 @@ export async function createProject(dto: z.infer<typeof createProjectSchema>, se
   const projectCreated = await db
     .insert(projects)
     .values({
+      id: projects.id.default,
       name: dto.name,
       description: dto.description,
       status: dto.status,

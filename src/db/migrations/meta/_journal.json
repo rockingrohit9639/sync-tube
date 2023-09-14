@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1694398498405,
-      "tag": "0000_stale_blockbuster",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1694398747057,
-      "tag": "0001_chemical_oracle",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1694575659620,
-      "tag": "0002_red_dracula",
+      "when": 1694665629357,
+      "tag": "0000_zippy_steel_serpent",
       "breakpoints": true
     }
   ]
