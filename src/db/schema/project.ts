@@ -1,5 +1,5 @@
 import { boolean, integer, pgEnum, pgTable, primaryKey, serial, text, timestamp } from 'drizzle-orm/pg-core'
-import { relations } from 'drizzle-orm'
+import { InferInsertModel, relations } from 'drizzle-orm'
 import { users } from './auth'
 
 export const projectStatusEnum = pgEnum('projectStatus', ['ONGOING', 'DONE'])
@@ -17,6 +17,8 @@ export const projects = pgTable('projects', {
   status: projectStatusEnum('projectStatus'),
   createdAt: timestamp('createdAt', { mode: 'date' }).defaultNow(),
 })
+
+export type Project = InferInsertModel<typeof projects>
 
 /** Defining one-to-one relation b/w project and user */
 export const projectAdminRelations = relations(projects, ({ one }) => ({
