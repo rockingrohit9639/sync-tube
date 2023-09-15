@@ -2,6 +2,7 @@ import { Session } from 'next-auth'
 import { z } from 'zod'
 import { and, desc, eq, ne } from 'drizzle-orm'
 import dayjs from 'dayjs'
+import { TRPCError } from '@trpc/server'
 import { db } from '~/db'
 import { projects } from '~/db/schema/project'
 import { createProjectSchema } from './project.schema'
@@ -49,4 +50,16 @@ export async function findUserProjects(session: Session) {
       onGoingStatus,
     }
   })
+}
+
+export async function findProjectById(id: number) {
+  const projectsFound = await db.select().from(projects).where(eq(projects.id, id))
+  if (projectsFound.length === 0) {
+    throw new TRPCError({
+      code: 'NOT_FOUND',
+      message: 'Project not found!',
+    })
+  }
+
+  return projectsFound[0]
 }
