@@ -3,7 +3,7 @@
 import { CalendarIcon } from 'lucide-react'
 import dayjs from 'dayjs'
 import React from 'react'
-import { cn } from '~/lib/utils'
+import { cn } from '~/lib/utils/utils'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Button } from '../ui/button'
 import { Calendar, CalendarProps } from '../ui/calendar'

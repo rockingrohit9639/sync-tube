@@ -34,16 +34,15 @@ import { useToast } from '~/components/ui/use-toast'
 export default function CreateProjectModal() {
   const [isOpen, setIsOpen] = useState(false)
   const { toast } = useToast()
+  const utils = trpc.useContext()
 
   const form = useForm<z.infer<typeof createProjectSchema>>({
     resolver: zodResolver(createProjectSchema),
-    defaultValues: {
-      status: 'ONGOING',
-    },
   })
 
   const createProjectMutation = trpc.projects.createProject.useMutation({
     onSuccess: (data) => {
+      utils.projects.findUserProjects.invalidate()
       form.reset()
 
       toast({
