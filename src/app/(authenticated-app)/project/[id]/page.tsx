@@ -5,6 +5,7 @@ import { Button } from '~/components/ui/button'
 import { Separator } from '~/components/ui/separator'
 import { useError } from '~/hooks/use-error'
 import { trpc } from '~/lib/trpc/client'
+import UpdateProjectModal from '../../_components/update-project-modal'
 
 export default function ProjectDetails() {
   const { id } = useParams()
@@ -36,7 +37,7 @@ export default function ProjectDetails() {
           <div className="text-2xl font-bold">{project.name}</div>
           <div className="text-gray-500">{project.description}</div>
         </div>
-        <div />
+        <UpdateProjectModal project={project} />
       </div>
 
       <Separator className="my-4" />

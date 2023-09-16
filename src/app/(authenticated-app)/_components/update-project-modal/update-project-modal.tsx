@@ -1,9 +1,11 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
-import * as z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import dayjs from 'dayjs'
 import { useCallback, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import DatePicker from '~/components/date-picker'
 import { Button } from '~/components/ui/button'
 import {
   Dialog,
@@ -13,10 +15,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '~/components/ui/dialog'
-import { createProjectSchema } from '~/server/routers/project/project.schema'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
-import { Textarea } from '~/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -26,51 +26,58 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select'
-import { Checkbox } from '~/components/ui/checkbox'
-import DatePicker from '~/components/date-picker'
-import { trpc } from '~/lib/trpc/client'
+import { Textarea } from '~/components/ui/textarea'
 import { useToast } from '~/components/ui/use-toast'
+import { Project } from '~/db/schema/project'
+import { trpc } from '~/lib/trpc/client'
+import { updateProjectSchema } from '~/server/routers/project/project.schema'
 
-export default function CreateProjectModal() {
+type UpdateProjectModalProps = {
+  project: Project
+}
+
+export default function UpdateProjectModal({ project }: UpdateProjectModalProps) {
   const [isOpen, setIsOpen] = useState(false)
   const { toast } = useToast()
   const utils = trpc.useContext()
 
-  const form = useForm<z.infer<typeof createProjectSchema>>({
-    resolver: zodResolver(createProjectSchema),
+  const form = useForm<z.infer<typeof updateProjectSchema>>({
+    resolver: zodResolver(updateProjectSchema.omit({ id: true })),
+    defaultValues: {
+      name: project.name,
+      description: project.description ?? undefined,
+      deadline: project.deadline ? dayjs(project.deadline).toDate() : undefined,
+      status: project.status ?? undefined,
+    },
   })
 
-  const createProjectMutation = trpc.projects.createProject.useMutation({
-    onSuccess: (data) => {
+  const updateProjectMutation = trpc.projects.updateProject.useMutation({
+    onSuccess: () => {
       utils.projects.findUserProjects.invalidate()
-      form.reset()
 
       toast({
-        title: 'Project created successfully!',
-        description: `${data.name} is created successfully, you can view it in your dashboard if it not archived.`,
+        title: 'Project updated successfully!',
       })
 
       setIsOpen(false)
     },
   })
 
-  const isArchived = form.watch('isArchive')
-
   const handleSubmit = useCallback(
-    (values: z.infer<typeof createProjectSchema>) => {
-      createProjectMutation.mutate(values)
+    (values: Omit<z.infer<typeof updateProjectSchema>, 'id'>) => {
+      updateProjectMutation.mutate({ ...values, id: project.id! })
     },
-    [createProjectMutation],
+    [updateProjectMutation, project.id],
   )
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger>
-        <Button>Create Project</Button>
+        <Button>Update Project</Button>
       </DialogTrigger>
       <DialogContent className="w-full max-w-screen-sm">
         <DialogHeader>
-          <DialogTitle>Create a project</DialogTitle>
+          <DialogTitle>Update project</DialogTitle>
           <DialogDescription>
             A project will keep track of your videos, raw videos and the history of editing
           </DialogDescription>
@@ -86,7 +93,7 @@ export default function CreateProjectModal() {
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input
-                      disabled={createProjectMutation.isLoading}
+                      disabled={updateProjectMutation.isLoading}
                       placeholder="A title describing your project"
                       {...field}
                     />
@@ -104,7 +111,7 @@ export default function CreateProjectModal() {
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      disabled={createProjectMutation.isLoading}
+                      disabled={updateProjectMutation.isLoading}
                       rows={5}
                       placeholder="What is your project about ?"
                       {...field}
@@ -122,7 +129,7 @@ export default function CreateProjectModal() {
                 <FormItem>
                   <FormLabel>Status</FormLabel>
                   <FormControl>
-                    <Select disabled={createProjectMutation.isLoading} {...field}>
+                    <Select disabled={updateProjectMutation.isLoading} {...field}>
                       <SelectTrigger>
                         <SelectValue placeholder="Status of your project" />
                       </SelectTrigger>
@@ -147,66 +154,15 @@ export default function CreateProjectModal() {
                 <FormItem className="flex flex-col">
                   <FormLabel>Project Deadline</FormLabel>
                   <FormControl>
-                    <DatePicker disabled={createProjectMutation.isLoading} {...field} />
+                    <DatePicker disabled={updateProjectMutation.isLoading} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="isArchive"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <div className="items-top flex space-x-2">
-                      <Checkbox
-                        disabled={createProjectMutation.isLoading}
-                        onCheckedChange={(state) => {
-                          if (!state) {
-                            form.setValue('archivedOn', undefined)
-                          }
-                          field.onChange(state)
-                        }}
-                      />
-                      <div className="grid gap-1.5 leading-none">
-                        <label
-                          htmlFor="terms1"
-                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          Is this project archived?
-                        </label>
-                        <p className="text-sm text-muted-foreground">
-                          Archived projects will not be visible on your dashboard but will be available to view anytime
-                          on your profile.
-                        </p>
-                      </div>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {isArchived ? (
-              <FormField
-                control={form.control}
-                name="archivedOn"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Archived On</FormLabel>
-                    <FormControl>
-                      <DatePicker disabled={createProjectMutation.isLoading} {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ) : null}
-
-            <Button type="submit" loading={createProjectMutation.isLoading}>
-              Create
+            <Button type="submit" loading={updateProjectMutation.isLoading}>
+              Update
             </Button>
           </form>
         </Form>

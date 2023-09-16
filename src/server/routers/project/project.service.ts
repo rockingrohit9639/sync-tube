@@ -5,7 +5,7 @@ import dayjs from 'dayjs'
 import { TRPCError } from '@trpc/server'
 import { db } from '~/db'
 import { projects } from '~/db/schema/project'
-import { createProjectSchema } from './project.schema'
+import { createProjectSchema, updateProjectSchema } from './project.schema'
 import { OnGoingStatus } from '~/types/project'
 
 export async function createProject(dto: z.infer<typeof createProjectSchema>, session: Session) {
@@ -18,7 +18,7 @@ export async function createProject(dto: z.infer<typeof createProjectSchema>, se
       status: dto.status,
       deadline: dto.deadline,
       archivedOn: dto.archivedOn,
-      isArchive: dto.isArchived,
+      isArchive: dto.isArchive,
       admin: session.user.id,
     })
     .returning()
@@ -86,4 +86,24 @@ export async function deleteProject(id: number, session: Session) {
 
   const deletedProject = await db.delete(projects).where(eq(projects.id, id)).returning()
   return deletedProject[0]
+}
+
+export async function updateProject(dto: z.infer<typeof updateProjectSchema>, session: Session) {
+  const project = await findProjectById(dto.id)
+  if (project.admin !== session.user.id) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to update this project!' })
+  }
+
+  const updatedProject = await db
+    .update(projects)
+    .set({
+      name: dto.name,
+      description: dto.description,
+      deadline: dto.deadline,
+      status: dto.status,
+    })
+    .where(eq(projects.id, dto.id))
+    .returning()
+
+  return updatedProject[0]
 }
