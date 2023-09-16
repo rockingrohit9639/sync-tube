@@ -63,3 +63,27 @@ export async function findProjectById(id: number) {
 
   return projectsFound[0]
 }
+
+export async function archiveProject(id: number, session: Session) {
+  const project = await findProjectById(id)
+  if (project.admin !== session.user.id) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to archive this project!' })
+  }
+
+  const updatedProject = await db
+    .update(projects)
+    .set({ isArchive: true, archivedOn: dayjs().toDate() })
+    .where(eq(projects.id, id))
+    .returning()
+  return updatedProject[0]
+}
+
+export async function deleteProject(id: number, session: Session) {
+  const project = await findProjectById(id)
+  if (project.admin !== session.user.id) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to delete this project!' })
+  }
+
+  const deletedProject = await db.delete(projects).where(eq(projects.id, id)).returning()
+  return deletedProject[0]
+}
