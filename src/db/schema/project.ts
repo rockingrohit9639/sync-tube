@@ -1,6 +1,7 @@
 import { boolean, integer, pgEnum, pgTable, primaryKey, serial, text, timestamp } from 'drizzle-orm/pg-core'
 import { InferInsertModel, relations } from 'drizzle-orm'
 import { users } from './auth'
+import { videos } from './video'
 
 export const projectStatusEnum = pgEnum('projectStatus', ['ONGOING', 'DONE'])
 
@@ -46,6 +47,7 @@ export const projectsToMembers = pgTable(
 
 export const projectRelations = relations(projects, ({ many }) => ({
   projectsToMembers: many(projectsToMembers),
+  videos: many(videos)
 }))
 
 export const usersRelations = relations(users, ({ many }) => ({
