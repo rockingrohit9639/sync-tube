@@ -9,7 +9,7 @@ export const videos = pgTable('videos', {
   id: serial('id').primaryKey(),
   title: varchar('title', { length: 255 }).notNull(),
   description: text('description'),
-  status: videoStatusEnum('videoStatus'),
+  status: videoStatusEnum('videoStatus').default('PENDING'),
   seenByAdmin: boolean('seenByAdmin').default(false),
   url: text('url').notNull(),
   uploadedById: text('uploadedBy')
