@@ -6,6 +6,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Label } from '../ui/label'
 import { Input, InputProps } from '../ui/input'
 import { uploadFile } from './queries'
+import { useToast } from '../ui/use-toast'
 
 type UploadProps = Omit<InputProps, 'type' | 'onChange'> & {
   label?: string
@@ -13,8 +14,12 @@ type UploadProps = Omit<InputProps, 'type' | 'onChange'> & {
 }
 
 export default function Upload({ label, onUpload, ...inputProps }: UploadProps) {
+  const { toast } = useToast()
   const uploadFileMutation = useMutation(uploadFile, {
     onSuccess: ({ uploadedUrl }) => {
+      toast({
+        title: 'File uploaded successfully!',
+      })
       onUpload?.(uploadedUrl)
     },
   })
@@ -37,7 +42,7 @@ export default function Upload({ label, onUpload, ...inputProps }: UploadProps) 
   ) : (
     <div className="grid w-full items-center gap-1.5 lg:max-w-sm">
       <Label htmlFor="uploader">{label ?? 'Upload'}</Label>
-      <Input type="file" onChange={handleFileUpload} {...inputProps} />
+      <Input id="uploader" type="file" onChange={handleFileUpload} {...inputProps} />
     </div>
   )
 }

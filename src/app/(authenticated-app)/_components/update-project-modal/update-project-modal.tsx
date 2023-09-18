@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import dayjs from 'dayjs'
+import { Edit } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -73,7 +74,9 @@ export default function UpdateProjectModal({ project }: UpdateProjectModalProps)
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger>
-        <Button>Update Project</Button>
+        <Button variant="outline" icon={<Edit />} className="h-full">
+          Update Project
+        </Button>
       </DialogTrigger>
       <DialogContent className="w-full max-w-screen-sm">
         <DialogHeader>
