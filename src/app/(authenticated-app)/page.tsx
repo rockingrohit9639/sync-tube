@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { trpc } from '~/lib/trpc/client'
 import CreateProjectModal from './_components/create-project-modal'
 import Project from './_components/project'
@@ -17,8 +16,6 @@ export default function Home() {
       <div className="flex items-center justify-end">
         <CreateProjectModal />
       </div>
-
-      <Link href="/upload">Move</Link>
 
       <div className="grid lg:grid-cols-3">
         <div className="col-span-2 space-y-4">

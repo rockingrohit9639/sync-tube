@@ -1,13 +1,15 @@
 'use client'
 
 import Image from 'next/image'
-import { redirect } from 'next/navigation'
+import { redirect, usePathname } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 import { ROUTES } from '~/lib/routes/utils'
 import { cn } from '~/lib/utils/utils'
 import NavLink from '../nav-link'
 import Avatar from '~/components/avatar'
 import Dropdown from '~/components/dropdown'
+import Loader from '~/components/loader'
+import Link from 'next/link'
 
 type AppShellProps = {
   className?: string
@@ -16,20 +18,31 @@ type AppShellProps = {
 }
 
 export default function AppShell({ className, style, children }: AppShellProps) {
-  const { data } = useSession()
+  const pathname = usePathname()
+
+  const { data, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect(`/signin?callbackUrl=${pathname}`)
+    },
+  })
+
+  if (status === 'loading') {
+    return <Loader title="Fetching session..." />
+  }
 
   if (!data) {
-    redirect('/signin')
+    return null
   }
 
   return (
     <div className={cn(className)} style={style}>
       <div className="fixed left-0 top-0 h-16 w-full border-b bg-black/10 px-4 backdrop-blur-lg">
         <div className="mx-auto flex h-full max-w-screen-xl items-center justify-between">
-          <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <Image src="/logo.png" alt="logo" width={50} height={50} />
             <div className="font-bold">SyncTube</div>
-          </div>
+          </Link>
           <div className="flex items-center gap-4">
             {ROUTES.map((route) => (
               <NavLink
