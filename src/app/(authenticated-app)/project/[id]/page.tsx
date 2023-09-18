@@ -14,6 +14,8 @@ export default function ProjectDetails() {
   const { handleError } = useError()
 
   const { data: project } = trpc.projects.findProjectById.useQuery({ id: Number(id) })
+  const { data: videos } = trpc.videos.findProjectVideos.useQuery({ id: Number(id) })
+
   const archiveProjectMutation = trpc.projects.archiveProject.useMutation({
     onSuccess: () => {
       router.replace('/')
@@ -46,7 +48,13 @@ export default function ProjectDetails() {
 
       <Separator className="my-4" />
 
-      <div className="flex min-h-screen items-center justify-center">Work in progress</div>
+      <div className="space-y-4">
+        {videos?.map((video) => (
+          <div key={video.id} className="rounded border p-4">
+            {video.title}
+          </div>
+        ))}
+      </div>
 
       <div className="space-y-4 rounded-md bg-red-950/20 p-4">
         <div className="text-2xl font-bold text-red-500">Danger Zone</div>
