@@ -1,20 +1,20 @@
 import { DefaultSession, NextAuthOptions } from 'next-auth'
 import NextAuth from 'next-auth/next'
-import { db } from '~/db'
-import { type User as UserType } from '~/db/schema/auth'
 import CustomGoogleProvider from '~/lib/auth/custom-google-provider'
-import { DrizzleAdapter } from '~/db/adapter/drizzle.adapter'
+import { PrismaAdapter } from '@auth/prisma-adapter'
+import { prisma } from '~/server/db'
+import { UserRole } from '@prisma/client'
 
 declare module 'next-auth' {
   interface Session {
     user: DefaultSession['user'] & {
       id: string
-      role: UserType['role']
+      role: UserRole
     }
   }
 
   interface User {
-    role: UserType['role']
+    role: UserRole
   }
 }
 
@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/signin',
   },
-  adapter: DrizzleAdapter(db),
+  adapter: PrismaAdapter(prisma) as any,
   callbacks: {
     session: ({ session, user }) => {
       return {
@@ -30,7 +30,7 @@ export const authOptions: NextAuthOptions = {
         user: {
           ...session.user,
           id: user.id,
-          role: user.role,
+          // role: user.role,
         },
       }
     },

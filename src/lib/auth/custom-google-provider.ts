@@ -1,11 +1,11 @@
+import { UserRole } from '@prisma/client'
 import { GoogleProfile } from 'next-auth/providers/google'
 import { OAuthConfig } from 'next-auth/providers/oauth'
-import { User } from '~/db/schema/auth'
 
 type CustomGoogleProviderOptions = {
   id: string
   name: string
-  role: User['role']
+  role: UserRole
   redirect_uri: string
 }
 

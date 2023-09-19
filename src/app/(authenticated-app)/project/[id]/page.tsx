@@ -7,11 +7,13 @@ import { useError } from '~/hooks/use-error'
 import { trpc } from '~/lib/trpc/client'
 import UpdateProjectModal from '../../_components/update-project-modal'
 import UploadVideoModal from '../../_components/upload-video-modal'
+import { useSession } from 'next-auth/react'
 
 export default function ProjectDetails() {
   const { id } = useParams()
   const router = useRouter()
   const { handleError } = useError()
+  const { data } = useSession()
 
   const { data: project } = trpc.projects.findProjectById.useQuery({ id: Number(id) })
   const { data: videos } = trpc.videos.findProjectVideos.useQuery({ id: Number(id) })
@@ -41,7 +43,7 @@ export default function ProjectDetails() {
           <div className="text-gray-500">{project.description}</div>
         </div>
         <div className="flex items-center gap-2">
-          <UpdateProjectModal project={project} />
+          {data?.user.id === project.admin ? <UpdateProjectModal project={project} /> : null}
           <UploadVideoModal projectId={project.id} />
         </div>
       </div>
