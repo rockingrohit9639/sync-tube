@@ -25,17 +25,19 @@ import { uploadVideoSchema } from '~/server/routers/video/video.dto'
 type UploadVideoModalProps = {
   className?: string
   style?: React.CSSProperties
-  projectId: number
+  projectId: string
 }
 
 export default function UploadVideoModal({ projectId }: UploadVideoModalProps) {
   const [isOpen, setIsOpen] = useState(false)
   const { handleError } = useError()
   const { toast } = useToast()
+  const utils = trpc.useContext()
 
   const uploadVideoMutation = trpc.videos.uploadVideo.useMutation({
     onError: handleError,
     onSuccess: () => {
+      utils.videos.findProjectVideos.invalidate()
       setIsOpen(false)
       toast({
         title: 'Video uploaded successfully!',

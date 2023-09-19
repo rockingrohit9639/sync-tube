@@ -48,6 +48,10 @@ model User {
   accounts      Account[]
   sessions      Session[]
   role          UserRole
+
+  projectsCreated Project[] @relation(name: "ProjectAdmin")
+  projectsJoined  Project[] @relation(name: "ProjectMembers")
+  videosUploaded  Video[]
 }
 
 model VerificationToken {
@@ -56,4 +60,49 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+enum ProjectStatus {
+  ONGOING
+  DONE
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  name        String
+  description String
+  deadline    DateTime?
+  isArchive   Boolean?      @default(false)
+  archivedOn  DateTime?
+  status      ProjectStatus @default(ONGOING)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  admin          User    @relation(fields: [adminId], references: [id], onDelete: Cascade, name: "ProjectAdmin")
+  adminId        String
+  members        User[]  @relation(name: "ProjectMembers")
+  videosUploaded Video[]
+}
+
+enum VideoStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CHANGES_REQUIRED
+}
+
+model Video {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  status      VideoStatus @default(PENDING)
+  seenByAdmin Boolean     @default(false)
+  url         String
+  uploadedAt  DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  uploadedBy   User    @relation(fields: [uploadedById], references: [id], onDelete: Cascade)
+  uploadedById String
+  project      Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId    String
 }

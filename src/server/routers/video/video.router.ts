@@ -6,9 +6,9 @@ import { z } from 'zod'
 export const videoRouter = router({
   uploadVideo: protectedProcedure
     .input(uploadVideoSchema)
-    .mutation(({ input, ctx }) => uploadVideo(input, ctx.session)),
+    .mutation(({ input, ctx }) => uploadVideo(ctx.prisma, input, ctx.session)),
 
   findProjectVideos: protectedProcedure
-    .input(z.object({ id: z.number().int() }))
-    .query(({ input }) => findProjectVideos(input.id)),
+    .input(z.object({ id: z.string() }))
+    .query(({ input, ctx }) => findProjectVideos(ctx.prisma, input.id)),
 })

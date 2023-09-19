@@ -5,5 +5,5 @@ export const uploadVideoSchema = z.object({
   description: z.string().optional(),
   status: z.enum(['PENDING', 'APPROVED', 'REJECTED', 'CHANGES_REQUIRED']).default('PENDING').optional(),
   url: z.string().url(),
-  projectId: z.number().int(),
+  projectId: z.string(),
 })

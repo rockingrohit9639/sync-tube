@@ -30,17 +30,20 @@ import { Checkbox } from '~/components/ui/checkbox'
 import DatePicker from '~/components/date-picker'
 import { trpc } from '~/lib/trpc/client'
 import { useToast } from '~/components/ui/use-toast'
+import { useError } from '~/hooks/use-error'
 
 export default function CreateProjectModal() {
   const [isOpen, setIsOpen] = useState(false)
   const { toast } = useToast()
   const utils = trpc.useContext()
+  const { handleError } = useError()
 
   const form = useForm<z.infer<typeof createProjectSchema>>({
     resolver: zodResolver(createProjectSchema),
   })
 
   const createProjectMutation = trpc.projects.createProject.useMutation({
+    onError: handleError,
     onSuccess: (data) => {
       utils.projects.findUserProjects.invalidate()
       form.reset()

@@ -5,6 +5,7 @@ import { experimental_nextCacheLink as nextCacheLink } from '@trpc/next/app-dir/
 import SuperJSON from 'superjson'
 import { getUserAuth } from '../auth/utils'
 import { appRouter } from '~/server/routers'
+import { prisma } from '~/server/db'
 
 /**
  * This client invokes procedures directly on the server without fetching over HTTP.
@@ -23,6 +24,7 @@ export const api = createTRPCNextAppDirServer<typeof appRouter>({
           async createContext() {
             const { session } = await getUserAuth()
             return {
+              prisma,
               session,
               headers: {
                 cookie: cookies().toString(),
