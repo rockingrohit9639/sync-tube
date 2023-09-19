@@ -19,5 +19,5 @@ export async function uploadVideo(prisma: PrismaClient, dto: z.infer<typeof uplo
 
 export async function findProjectVideos(prisma: PrismaClient, projectId: string) {
   const project = await findProjectById(prisma, projectId)
-  return prisma.video.findMany({ where: { projectId: project.id } })
+  return prisma.video.findMany({ where: { projectId: project.id }, include: { uploadedBy: true } })
 }

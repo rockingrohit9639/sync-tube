@@ -8,6 +8,7 @@ import { trpc } from '~/lib/trpc/client'
 import UpdateProjectModal from '../../_components/update-project-modal'
 import UploadVideoModal from '../../_components/upload-video-modal'
 import { useSession } from 'next-auth/react'
+import Video from '../../_components/video/video'
 
 export default function ProjectDetails() {
   const { id } = useParams() as { id: string }
@@ -50,18 +51,13 @@ export default function ProjectDetails() {
 
       <Separator className="my-4" />
 
-      <div className="space-y-4">
-        {videos?.map((video) => (
-          <div key={video.id} className="rounded border p-4">
-            {video.title}
-          </div>
-        ))}
-      </div>
+      <div className="space-y-4">{videos?.map((video) => <Video key={video.id} video={video} />)}</div>
 
+      <Separator className="my-4" />
       <div className="space-y-4 rounded-md bg-red-950/20 p-4">
         <div className="text-2xl font-bold text-red-500">Danger Zone</div>
 
-        <div className="flex items-center justify-between rounded-md border px-4 py-2">
+        <div className="flex items-center justify-between gap-2 rounded-md border px-4 py-2">
           <div>
             <div className="text-lg font-medium">Archive Project</div>
             <div className="text-gray-500">
@@ -81,7 +77,7 @@ export default function ProjectDetails() {
           </Button>
         </div>
 
-        <div className="flex items-center justify-between rounded-md border px-4 py-2">
+        <div className="flex items-center justify-between gap-2 rounded-md border px-4 py-2">
           <div>
             <div className="text-lg font-medium">Delete Project</div>
             <div className="text-gray-500">
