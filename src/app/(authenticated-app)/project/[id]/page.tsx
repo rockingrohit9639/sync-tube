@@ -51,6 +51,7 @@ export default function ProjectDetails() {
 
       <Separator className="my-4" />
 
+      <div className="mb-2">Total Uploaded Videos ({videos?.length ?? 0})</div>
       <div className="space-y-4">{videos?.map((video) => <Video key={video.id} video={video} />)}</div>
 
       <Separator className="my-4" />

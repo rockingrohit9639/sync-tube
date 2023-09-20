@@ -9,6 +9,7 @@ import { DATE_FORMAT } from '~/lib/utils/constants'
 import { formatEnum } from '~/lib/utils/format'
 import { cn } from '~/lib/utils/utils'
 import { VIDEO_STATUS_COLOR_MAP } from '~/lib/utils/video'
+import DeleteVideo from '../delete-video'
 
 type VideoProps = {
   className?: string
@@ -44,9 +45,14 @@ export default function Video({ className, style, video }: VideoProps) {
         <Button variant="outline" icon={<Edit />}>
           Edit
         </Button>
-        <Button variant="destructive-outline" icon={<Trash />}>
-          Delete
-        </Button>
+        <DeleteVideo
+          id={video.id}
+          trigger={
+            <Button variant="destructive-outline" icon={<Trash />}>
+              Delete
+            </Button>
+          }
+        />
         <div
           className="w-min rounded border px-2 py-1 text-center text-sm opacity-50"
           style={{ borderColor: statusColor, color: statusColor }}
