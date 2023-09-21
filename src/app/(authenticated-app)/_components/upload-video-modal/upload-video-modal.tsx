@@ -14,12 +14,14 @@ import {
 } from '~/components/ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
-
 import { Textarea } from '~/components/ui/textarea'
 import { useToast } from '~/components/ui/use-toast'
 import Upload from '~/components/upload'
 import { useError } from '~/hooks/use-error'
+import { useUppyUpload } from '~/hooks/use-uppy-upload'
 import { trpc } from '~/lib/trpc/client'
+import { env } from '~/lib/utils/env.mjs'
+import { supabase } from '~/lib/utils/supabase'
 import { uploadVideoSchema } from '~/server/routers/video/video.dto'
 
 type UploadVideoModalProps = {
@@ -33,6 +35,7 @@ export default function UploadVideoModal({ projectId }: UploadVideoModalProps) {
   const { handleError } = useError()
   const { toast } = useToast()
   const utils = trpc.useContext()
+  const { uppy } = useUppyUpload()
 
   const uploadVideoMutation = trpc.videos.uploadVideo.useMutation({
     onError: handleError,
@@ -55,8 +58,14 @@ export default function UploadVideoModal({ projectId }: UploadVideoModalProps) {
     },
   })
 
-  const handleSubmit = useCallback((values: Omit<z.infer<typeof uploadVideoSchema>, 'projectId'>) => {
-    uploadVideoMutation.mutate({ ...values, projectId })
+  const handleSubmit = useCallback(async (values: Omit<z.infer<typeof uploadVideoSchema>, 'projectId'>) => {
+    const files = uppy.getFiles()
+    const file = files[0]
+    const filepath = file.meta.objectName
+
+    await supabase.storage.from(env.NEXT_PUBLIC_SUPABASE_BUCKET).upload(filepath, file.data)
+    const { data: response } = supabase.storage.from(env.NEXT_PUBLIC_SUPABASE_BUCKET).getPublicUrl(filepath)
+    uploadVideoMutation.mutate({ ...values, url: response.publicUrl, projectId })
   }, [])
 
   return (
