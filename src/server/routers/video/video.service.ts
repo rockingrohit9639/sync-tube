@@ -1,16 +1,17 @@
 import { z } from 'zod'
 import { Session } from 'next-auth'
-import { uploadVideoSchema } from './video.dto'
+import { updateVideoStatusSchema, uploadVideoSchema } from './video.dto'
 import { findProjectById } from '../project/project.service'
 import { PrismaClient } from '@prisma/client'
 import { TRPCError } from '@trpc/server'
+import { VIDEO_INCLUDE_FIELDS } from './video.fields'
 
 export async function uploadVideo(prisma: PrismaClient, dto: z.infer<typeof uploadVideoSchema>, session: Session) {
   return prisma.video.create({
     data: {
       title: dto.title,
       description: dto.description,
-      url: dto.url,
+      url: dto.url!,
       status: 'PENDING',
       projectId: dto.projectId,
       uploadedById: session.user.id,
@@ -20,7 +21,10 @@ export async function uploadVideo(prisma: PrismaClient, dto: z.infer<typeof uplo
 
 export async function findProjectVideos(prisma: PrismaClient, projectId: string) {
   const project = await findProjectById(prisma, projectId)
-  return prisma.video.findMany({ where: { projectId: project.id }, include: { uploadedBy: true } })
+  return prisma.video.findMany({
+    where: { projectId: project.id, OR: [{ status: 'PENDING' }, { status: 'CHANGES_REQUIRED' }] },
+    include: VIDEO_INCLUDE_FIELDS,
+  })
 }
 
 export async function findVideoById(prisma: PrismaClient, id: string) {
@@ -40,4 +44,19 @@ export async function deleteVideo(prisma: PrismaClient, videoId: string, session
     throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to delete this project!' })
   }
   return prisma.video.delete({ where: { id: videoId } })
+}
+
+export async function updateVideoStatus(
+  prisma: PrismaClient,
+  dto: z.infer<typeof updateVideoStatusSchema>,
+  session: Session,
+) {
+  const video = await findVideoById(prisma, dto.videoId)
+  const project = await findProjectById(prisma, video.projectId)
+
+  if (project.adminId !== session.user.id) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to update status for this video!' })
+  }
+
+  return prisma.video.update({ where: { id: video.id }, data: { status: dto.status } })
 }

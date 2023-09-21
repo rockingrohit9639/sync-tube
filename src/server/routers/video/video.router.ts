@@ -1,6 +1,6 @@
 import { protectedProcedure, router, youtuberProcedure } from '~/server/trpc'
-import { uploadVideoSchema } from './video.dto'
-import { deleteVideo, findProjectVideos, uploadVideo } from './video.service'
+import { updateVideoStatusSchema, uploadVideoSchema } from './video.dto'
+import { deleteVideo, findProjectVideos, updateVideoStatus, uploadVideo } from './video.service'
 import { z } from 'zod'
 
 export const videoRouter = router({
@@ -15,4 +15,8 @@ export const videoRouter = router({
   deleteVideo: youtuberProcedure
     .input(z.object({ id: z.string() }))
     .mutation(({ input, ctx }) => deleteVideo(ctx.prisma, input.id, ctx.session)),
+
+  updateVideoStatus: youtuberProcedure
+    .input(updateVideoStatusSchema)
+    .mutation(({ input, ctx }) => updateVideoStatus(ctx.prisma, input, ctx.session)),
 })

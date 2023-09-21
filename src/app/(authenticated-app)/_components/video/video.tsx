@@ -1,20 +1,21 @@
 import { Prisma } from '@prisma/client'
 import dayjs from 'dayjs'
-import { Edit, Trash, View } from 'lucide-react'
+import { Trash, View } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import Tooltip from '~/components/tooltip'
 import { Button } from '~/components/ui/button'
 import { DATE_FORMAT } from '~/lib/utils/constants'
 import { formatEnum } from '~/lib/utils/format'
 import { cn } from '~/lib/utils/utils'
 import { VIDEO_STATUS_COLOR_MAP } from '~/lib/utils/video'
 import DeleteVideo from '../delete-video'
+import UpdateVideoStatus from '../update-video-status'
+import { VIDEO_INCLUDE_FIELDS } from '~/server/routers/video/video.fields'
 
 type VideoProps = {
   className?: string
   style?: React.CSSProperties
-  video: Prisma.VideoGetPayload<{ include: { uploadedBy: true } }>
+  video: Prisma.VideoGetPayload<{ include: typeof VIDEO_INCLUDE_FIELDS }>
 }
 
 export default function Video({ className, style, video }: VideoProps) {
@@ -42,9 +43,9 @@ export default function Video({ className, style, video }: VideoProps) {
         >
           View
         </Button>
-        <Button variant="outline" icon={<Edit />}>
-          Edit
-        </Button>
+
+        {session?.user.id === video.project.adminId ? <UpdateVideoStatus video={video} /> : null}
+
         <DeleteVideo
           id={video.id}
           trigger={
@@ -54,7 +55,7 @@ export default function Video({ className, style, video }: VideoProps) {
           }
         />
         <div
-          className="w-min rounded border px-2 py-1 text-center text-sm opacity-50"
+          className="w-max rounded border px-2 py-1 text-center text-sm opacity-50"
           style={{ borderColor: statusColor, color: statusColor }}
         >
           {formatEnum(video.status)}
