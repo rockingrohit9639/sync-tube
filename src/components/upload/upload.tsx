@@ -21,7 +21,7 @@ type UploadProps = Omit<InputProps, 'type' | 'onChange'> & {
 }
 
 export default function Upload({ label, onUpload, ...inputProps }: UploadProps) {
-  const { uppy } = useUppyUpload()
+  const { uppy } = useUppyUpload({})
 
   useEffect(function resetDashboardInnerStyle() {
     /** We have to manually reset it, as Uppy does not provide anything to override it */

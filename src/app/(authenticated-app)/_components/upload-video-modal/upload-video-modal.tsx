@@ -1,5 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { UppyFile } from '@uppy/core'
 import { UploadIcon } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 import { useCallback, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -35,7 +37,7 @@ export default function UploadVideoModal({ projectId }: UploadVideoModalProps) {
   const { handleError } = useError()
   const { toast } = useToast()
   const utils = trpc.useContext()
-  const { uppy } = useUppyUpload()
+  const { data: session } = useSession()
 
   const uploadVideoMutation = trpc.videos.uploadVideo.useMutation({
     onError: handleError,
@@ -58,15 +60,27 @@ export default function UploadVideoModal({ projectId }: UploadVideoModalProps) {
     },
   })
 
-  const handleSubmit = useCallback(async (values: Omit<z.infer<typeof uploadVideoSchema>, 'projectId'>) => {
-    const files = uppy.getFiles()
-    const file = files[0]
-    const filepath = file.meta.objectName
+  const handleSubmit = useCallback((file: UppyFile) => {
+    const filepath = `${session?.user.id}/${file.name}`
+    try {
+      const { data } = supabase.storage.from(env.NEXT_PUBLIC_SUPABASE_BUCKET).getPublicUrl(filepath)
+      const formValues = form.getValues()
 
-    await supabase.storage.from(env.NEXT_PUBLIC_SUPABASE_BUCKET).upload(filepath, file.data)
-    const { data: response } = supabase.storage.from(env.NEXT_PUBLIC_SUPABASE_BUCKET).getPublicUrl(filepath)
-    uploadVideoMutation.mutate({ ...values, url: response.publicUrl, projectId })
+      uploadVideoMutation.mutate({ ...formValues, url: data.publicUrl, projectId })
+    } catch (error) {
+      /** Remove file from bucket */
+      supabase.storage.from(env.NEXT_PUBLIC_SUPABASE_BUCKET).remove([filepath])
+      toast({ title: 'Something went wrong while uploading your file!' })
+    }
   }, [])
+
+  const { uppy } = useUppyUpload({
+    onUploadComplete: handleSubmit,
+  })
+
+  const triggerFileUpload = () => {
+    uppy.upload()
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -80,7 +94,7 @@ export default function UploadVideoModal({ projectId }: UploadVideoModalProps) {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(triggerFileUpload)} className="space-y-4">
             <FormField
               control={form.control}
               name="title"
