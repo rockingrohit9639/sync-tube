@@ -2,7 +2,7 @@ import { Avatar as ShadAvatar, AvatarImage, AvatarFallback } from '~/components/
 
 type AvatarProps = {
   children?: React.ReactNode
-  src?: string | null
+  src?: string
 }
 
 export default function Avatar({ src, children }: AvatarProps) {

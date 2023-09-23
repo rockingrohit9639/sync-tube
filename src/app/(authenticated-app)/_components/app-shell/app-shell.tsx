@@ -67,7 +67,7 @@ export default function AppShell({ className, style, children }: AppShellProps) 
               ]}
               label={data.user.name}
             >
-              <Avatar src={data.user.image}>{data?.user?.name?.[0]}</Avatar>
+              <Avatar src={data.user.image!}>{data?.user?.name?.[0]}</Avatar>
             </Dropdown>
           </div>
         </div>
