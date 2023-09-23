@@ -1,7 +1,7 @@
+import { Project as ProjectType } from '@prisma/client'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 import Tooltip from '~/components/tooltip'
-import { Project as ProjectType } from '~/db/schema/project'
 import { DATE_FORMAT } from '~/lib/utils/constants'
 import { ONGOING_STATUS_COLOR_MAP } from '~/lib/utils/project'
 import { cn } from '~/lib/utils/utils'
