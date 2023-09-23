@@ -3,13 +3,13 @@
 import Image from 'next/image'
 import { redirect, usePathname } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
+import Link from 'next/link'
 import { ROUTES } from '~/lib/routes/utils'
 import { cn } from '~/lib/utils/utils'
 import NavLink from '../nav-link'
 import Avatar from '~/components/avatar'
 import Dropdown from '~/components/dropdown'
 import Loader from '~/components/loader'
-import Link from 'next/link'
 
 type AppShellProps = {
   className?: string

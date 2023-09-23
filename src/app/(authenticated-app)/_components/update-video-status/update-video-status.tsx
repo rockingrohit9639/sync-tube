@@ -56,9 +56,12 @@ export default function UpdateVideoStatus({ className, style, video }: UpdateVid
     resolver: zodResolver(updateVideoStatusSchema.omit({ videoId: true })),
   })
 
-  const handleSubmit = useCallback((values: Omit<z.infer<typeof updateVideoStatusSchema>, 'videoId'>) => {
-    updateStatusMutation.mutate({ ...values, videoId: video.id })
-  }, [])
+  const handleSubmit = useCallback(
+    (values: Omit<z.infer<typeof updateVideoStatusSchema>, 'videoId'>) => {
+      updateStatusMutation.mutate({ ...values, videoId: video.id })
+    },
+    [updateStatusMutation, video.id],
+  )
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -98,7 +101,9 @@ export default function UpdateVideoStatus({ className, style, video }: UpdateVid
                         <SelectGroup>
                           <SelectLabel>Project Status</SelectLabel>
                           {Object.values(VideoStatus).map((videoStatus) => (
-                            <SelectItem value={videoStatus}>{formatEnum(videoStatus)}</SelectItem>
+                            <SelectItem value={videoStatus} key={videoStatus}>
+                              {formatEnum(videoStatus)}
+                            </SelectItem>
                           ))}
                         </SelectGroup>
                       </SelectContent>

@@ -1,9 +1,9 @@
 import { z } from 'zod'
 import { Session } from 'next-auth'
-import { updateVideoStatusSchema, uploadVideoSchema } from './video.dto'
-import { findProjectById } from '../project/project.service'
 import { PrismaClient } from '@prisma/client'
 import { TRPCError } from '@trpc/server'
+import { updateVideoStatusSchema, uploadVideoSchema } from './video.dto'
+import { findProjectById } from '../project/project.service'
 import { VIDEO_INCLUDE_FIELDS } from './video.fields'
 
 export async function uploadVideo(prisma: PrismaClient, dto: z.infer<typeof uploadVideoSchema>, session: Session) {

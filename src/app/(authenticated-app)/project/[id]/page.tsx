@@ -1,13 +1,13 @@
 'use client'
 
 import { useParams, useRouter } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { Button } from '~/components/ui/button'
 import { Separator } from '~/components/ui/separator'
 import { useError } from '~/hooks/use-error'
 import { trpc } from '~/lib/trpc/client'
 import UpdateProjectModal from '../../_components/update-project-modal'
 import UploadVideoModal from '../../_components/upload-video-modal'
-import { useSession } from 'next-auth/react'
 import Video from '../../_components/video/video'
 
 export default function ProjectDetails() {

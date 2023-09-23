@@ -1,9 +1,9 @@
 import { DefaultSession, NextAuthOptions } from 'next-auth'
 import NextAuth from 'next-auth/next'
-import CustomGoogleProvider from '~/lib/auth/custom-google-provider'
 import { PrismaAdapter } from '@auth/prisma-adapter'
-import { prisma } from '~/server/db'
 import { UserRole } from '@prisma/client'
+import CustomGoogleProvider from '~/lib/auth/custom-google-provider'
+import { prisma } from '~/server/db'
 
 declare module 'next-auth' {
   interface Session {

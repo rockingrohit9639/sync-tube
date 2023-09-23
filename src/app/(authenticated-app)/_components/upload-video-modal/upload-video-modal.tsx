@@ -60,19 +60,22 @@ export default function UploadVideoModal({ projectId }: UploadVideoModalProps) {
     },
   })
 
-  const handleSubmit = useCallback((file: UppyFile) => {
-    const filepath = `${session?.user.id}/${file.name}`
-    try {
-      const { data } = supabase.storage.from(env.NEXT_PUBLIC_SUPABASE_BUCKET).getPublicUrl(filepath)
-      const formValues = form.getValues()
+  const handleSubmit = useCallback(
+    (file: UppyFile) => {
+      const filepath = `${session?.user.id}/${file.name}`
+      try {
+        const { data } = supabase.storage.from(env.NEXT_PUBLIC_SUPABASE_BUCKET).getPublicUrl(filepath)
+        const formValues = form.getValues()
 
-      uploadVideoMutation.mutate({ ...formValues, url: data.publicUrl, projectId })
-    } catch (error) {
-      /** Remove file from bucket */
-      supabase.storage.from(env.NEXT_PUBLIC_SUPABASE_BUCKET).remove([filepath])
-      toast({ title: 'Something went wrong while uploading your file!' })
-    }
-  }, [])
+        uploadVideoMutation.mutate({ ...formValues, url: data.publicUrl, projectId })
+      } catch (error) {
+        /** Remove file from bucket */
+        supabase.storage.from(env.NEXT_PUBLIC_SUPABASE_BUCKET).remove([filepath])
+        toast({ title: 'Something went wrong while uploading your file!' })
+      }
+    },
+    [form, projectId, session?.user.id, toast, uploadVideoMutation],
+  )
 
   const { uppy } = useUppyUpload({
     onUploadComplete: handleSubmit,
@@ -135,10 +138,10 @@ export default function UploadVideoModal({ projectId }: UploadVideoModalProps) {
             <FormField
               control={form.control}
               name="url"
-              render={({ field }) => (
+              render={() => (
                 <FormItem className="flex flex-col">
                   <FormControl>
-                    <Upload label="Upload Video" onUpload={(url) => field.onChange(url)} />
+                    <Upload />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

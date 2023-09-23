@@ -26,7 +26,7 @@ export default function DeleteVideo({ className, style, id, trigger }: DeleteVid
 
   const handleDelete = useCallback(() => {
     deleteVideoMutation.mutate({ id })
-  }, [])
+  }, [deleteVideoMutation, id])
 
   return (
     <Alert

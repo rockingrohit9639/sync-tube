@@ -4,7 +4,6 @@ import '@uppy/core/dist/style.min.css'
 import '@uppy/drag-drop/dist/style.min.css'
 import '@uppy/status-bar/dist/style.min.css'
 import { useEffect } from 'react'
-import { InputProps } from '../ui/input'
 import { Dashboard } from '@uppy/react'
 
 import '@uppy/core/dist/style.css'
@@ -15,12 +14,7 @@ import '@uppy/progress-bar/dist/style.css'
 
 import { useUppyUpload } from '~/hooks/use-uppy-upload'
 
-type UploadProps = Omit<InputProps, 'type' | 'onChange'> & {
-  label?: string
-  onUpload?: (uploadedUrl: string) => void
-}
-
-export default function Upload({ label, onUpload, ...inputProps }: UploadProps) {
+export default function Upload() {
   const { uppy } = useUppyUpload({})
 
   useEffect(function resetDashboardInnerStyle() {

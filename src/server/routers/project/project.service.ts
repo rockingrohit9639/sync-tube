@@ -2,9 +2,9 @@ import { Session } from 'next-auth'
 import { z } from 'zod'
 import dayjs from 'dayjs'
 import { TRPCError } from '@trpc/server'
+import { PrismaClient } from '@prisma/client'
 import { createProjectSchema, updateProjectSchema } from './project.schema'
 import { OnGoingStatus } from '~/types/project'
-import { PrismaClient } from '@prisma/client'
 
 export async function createProject(prisma: PrismaClient, dto: z.infer<typeof createProjectSchema>, session: Session) {
   return prisma.project.create({
