@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Project } from '@prisma/client'
 import dayjs from 'dayjs'
 import { Edit } from 'lucide-react'
 import { useCallback, useState } from 'react'
@@ -29,7 +30,6 @@ import {
 } from '~/components/ui/select'
 import { Textarea } from '~/components/ui/textarea'
 import { useToast } from '~/components/ui/use-toast'
-import { Project } from '~/db/schema/project'
 import { trpc } from '~/lib/trpc/client'
 import { updateProjectSchema } from '~/server/routers/project/project.schema'
 
