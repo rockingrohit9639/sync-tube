@@ -9,6 +9,7 @@ import { trpc } from '~/lib/trpc/client'
 import UpdateProjectModal from '../../_components/update-project-modal'
 import UploadVideoModal from '../../_components/upload-video-modal'
 import Video from '../../_components/video/video'
+import InviteMembersModal from '../../_components/invite-members-modal'
 
 export default function ProjectDetails() {
   const { id } = useParams() as { id: string }
@@ -44,15 +45,22 @@ export default function ProjectDetails() {
           <div className="text-gray-500">{project.description}</div>
         </div>
         <div className="flex items-center gap-2">
-          {session?.user.id === project.adminId ? <UpdateProjectModal project={project} /> : null}
+          {session?.user.id === project.adminId ? (
+            <>
+              <UpdateProjectModal project={project} />
+              <InviteMembersModal projectId={project.id} />
+            </>
+          ) : null}
           <UploadVideoModal projectId={project.id} />
         </div>
       </div>
 
       <Separator className="my-4" />
 
-      <div className="mb-2">Total Uploaded Videos ({videos?.length ?? 0})</div>
-      <div className="space-y-4">{videos?.map((video) => <Video key={video.id} video={video} />)}</div>
+      <div className="min-h-[60vh] space-y-4">
+        <div className="mb-2">Total Uploaded Videos ({videos?.length ?? 0})</div>
+        {videos?.map((video) => <Video key={video.id} video={video} />)}
+      </div>
 
       <Separator className="my-4" />
       <div className="space-y-4 rounded-md bg-red-950/20 p-4">

@@ -49,10 +49,12 @@ model User {
   sessions      Session[]
   role          UserRole
 
-  projectsCreated Project[] @relation(name: "ProjectAdmin")
-  projectsJoined  Project[] @relation(name: "ProjectMembers")
-  videosUploaded  Video[]
-  uploadedFiles   File[]
+  projectsCreated     Project[]    @relation(name: "ProjectAdmin")
+  projectsJoined      Project[]    @relation(name: "ProjectMembers")
+  videosUploaded      Video[]
+  uploadedFiles       File[]
+  sentInvitations     Invitation[] @relation(name: "SentInvitations")
+  receivedInvitations Invitation[] @relation(name: "ReceivedInvitations")
 }
 
 model VerificationToken {
@@ -79,10 +81,11 @@ model Project {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
-  admin          User    @relation(fields: [adminId], references: [id], onDelete: Cascade, name: "ProjectAdmin")
+  admin          User         @relation(fields: [adminId], references: [id], onDelete: Cascade, name: "ProjectAdmin")
   adminId        String
-  members        User[]  @relation(name: "ProjectMembers")
+  members        User[]       @relation(name: "ProjectMembers")
   videosUploaded Video[]
+  invitations    Invitation[]
 }
 
 enum VideoStatus {
@@ -123,4 +126,21 @@ model File {
   uploadedById String
 
   video Video?
+}
+
+model Invitation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  // Who invided?
+  inviter   User   @relation(name: "SentInvitations", fields: [inviterId], references: [id], onDelete: Cascade)
+  inviterId String
+
+  // Whom is invited?
+  invitee   User   @relation(name: "ReceivedInvitations", fields: [inviteeId], references: [id], onDelete: Cascade)
+  inviteeId String
+
+  // On which project the user is invided?
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId String
 }
