@@ -21,7 +21,7 @@ import Upload from '~/components/upload'
 import { useError } from '~/hooks/use-error'
 import { useUppyUpload } from '~/hooks/use-uppy-upload'
 import { trpc } from '~/lib/trpc/client'
-import { uploadVideoSchema } from '~/server/routers/video/video.dto'
+import { uploadVideoSchema } from '~/server/routers/video/video.schema'
 
 type UploadVideoModalProps = {
   className?: string

@@ -28,7 +28,7 @@ import { useError } from '~/hooks/use-error'
 import { trpc } from '~/lib/trpc/client'
 import { formatEnum } from '~/lib/utils/format'
 import { cn } from '~/lib/utils/utils'
-import { updateVideoStatusSchema } from '~/server/routers/video/video.dto'
+import { updateVideoStatusSchema } from '~/server/routers/video/video.schema'
 import { VIDEO_INCLUDE_FIELDS } from '~/server/routers/video/video.fields'
 
 type UpdateVideoStatusProps = {

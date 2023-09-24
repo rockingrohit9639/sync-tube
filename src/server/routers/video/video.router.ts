@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { protectedProcedure, router, youtuberProcedure } from '~/server/trpc'
-import { updateVideoStatusSchema, uploadVideoSchema } from './video.dto'
+import { updateVideoStatusSchema, uploadVideoSchema } from './video.schema'
 import { deleteVideo, findProjectVideos, updateVideoStatus, uploadVideo } from './video.service'
 
 export const videoRouter = router({
