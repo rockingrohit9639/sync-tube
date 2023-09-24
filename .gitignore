@@ -37,3 +37,6 @@ next-env.d.ts
 
 # database
 db-data
+
+# uploaded files
+uploads

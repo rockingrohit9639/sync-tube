@@ -15,6 +15,7 @@ export async function uploadVideo(prisma: PrismaClient, dto: z.infer<typeof uplo
       status: 'PENDING',
       projectId: dto.projectId,
       uploadedById: session.user.id,
+      fileId: dto.fileId,
     },
   })
 }

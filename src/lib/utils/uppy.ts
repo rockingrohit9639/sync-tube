@@ -1,8 +1,6 @@
 import Uppy from '@uppy/core'
-import Tus from '@uppy/tus'
-import { GB, MB } from './constants'
-import { supabaseStorageUrl } from './supabase'
-import { env } from './env.mjs'
+import XHR from '@uppy/xhr-upload'
+import { GB } from './constants'
 
 export function initializeUppy() {
   return new Uppy({
@@ -10,19 +8,15 @@ export function initializeUppy() {
       /** 5GB is max file size */
       maxFileSize: 5 * GB,
       /** 20MB is min file size */
-      // minFileSize: 20 * MB,
+      // minFileSize: 5 * MB,
       /** Upload one file at a time */
       maxNumberOfFiles: 1,
       /** Only videos uploads are allowed */
       allowedFileTypes: ['video/*'],
     },
-  }).use(Tus, {
-    endpoint: supabaseStorageUrl,
-    limit: 1,
-    headers: {
-      authorization: `Bearer ${env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
-    },
-    chunkSize: 6 * MB,
-    allowedMetaFields: ['bucketName', 'objectName', 'contentType', 'cacheControl'],
+  }).use(XHR, {
+    endpoint: '/api/media',
+    formData: true,
+    fieldName: 'file',
   })
 }

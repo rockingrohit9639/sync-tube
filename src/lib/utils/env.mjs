@@ -10,6 +10,7 @@ export const env = createEnv({
     GOOGLE_CLIENT_SECRET: z.string(),
     GOOGLE_YOUTUBE_REDIRECT_URI: z.string().url(),
     GOOGLE_EDITOR_REDIRECT_URI: z.string().url(),
+    UPLOAD_DIR: z.string(),
   },
   client: {
     NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
@@ -27,6 +28,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NEXT_PUBLIC_SUPABASE_BUCKET: process.env.NEXT_PUBLIC_SUPABASE_BUCKET,
+    UPLOAD_DIR: process.env.UPLOAD_DIR,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 })

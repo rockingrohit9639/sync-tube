@@ -8,6 +8,7 @@ export const uploadVideoSchema = z.object({
   status: videoStatusEnumSchema.default('PENDING').optional(),
   url: z.string().optional(),
   projectId: z.string(),
+  fileId: z.string(),
 })
 
 export const updateVideoStatusSchema = z.object({

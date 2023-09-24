@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { UppyFile } from '@uppy/core'
+import { SuccessResponse, UppyFile } from '@uppy/core'
 import { UploadIcon } from 'lucide-react'
-import { useSession } from 'next-auth/react'
 import { useCallback, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -22,8 +21,6 @@ import Upload from '~/components/upload'
 import { useError } from '~/hooks/use-error'
 import { useUppyUpload } from '~/hooks/use-uppy-upload'
 import { trpc } from '~/lib/trpc/client'
-import { env } from '~/lib/utils/env.mjs'
-import { supabase } from '~/lib/utils/supabase'
 import { uploadVideoSchema } from '~/server/routers/video/video.dto'
 
 type UploadVideoModalProps = {
@@ -37,21 +34,9 @@ export default function UploadVideoModal({ projectId }: UploadVideoModalProps) {
   const { handleError } = useError()
   const { toast } = useToast()
   const utils = trpc.useContext()
-  const { data: session } = useSession()
-
-  const uploadVideoMutation = trpc.videos.uploadVideo.useMutation({
-    onError: handleError,
-    onSuccess: () => {
-      utils.videos.findProjectVideos.invalidate()
-      setIsOpen(false)
-      toast({
-        title: 'Video uploaded successfully!',
-      })
-    },
-  })
 
   const form = useForm<z.infer<typeof uploadVideoSchema>>({
-    resolver: zodResolver(uploadVideoSchema.omit({ projectId: true })),
+    resolver: zodResolver(uploadVideoSchema.omit({ projectId: true, fileId: true })),
     defaultValues: {
       title: '',
       description: '',
@@ -60,34 +45,33 @@ export default function UploadVideoModal({ projectId }: UploadVideoModalProps) {
     },
   })
 
-  const handleSubmit = useCallback(
-    (file: UppyFile) => {
-      const filepath = `${session?.user.id}/${file.name}`
-      try {
-        const { data } = supabase.storage.from(env.NEXT_PUBLIC_SUPABASE_BUCKET).getPublicUrl(filepath)
-        const formValues = form.getValues()
-
-        uploadVideoMutation.mutate({ ...formValues, url: data.publicUrl, projectId })
-      } catch (error) {
-        /** Remove file from bucket */
-        supabase.storage.from(env.NEXT_PUBLIC_SUPABASE_BUCKET).remove([filepath])
-        toast({ title: 'Something went wrong while uploading your file!' })
-      }
+  const uploadVideoMutation = trpc.videos.uploadVideo.useMutation({
+    onError: handleError,
+    onSuccess: () => {
+      form.reset()
+      utils.videos.findProjectVideos.invalidate()
+      setIsOpen(false)
+      toast({
+        title: 'Video uploaded successfully!',
+      })
     },
-    [form, projectId, session?.user.id, toast, uploadVideoMutation],
+  })
+
+  const handleSubmit = useCallback(
+    (_: UppyFile, response: SuccessResponse) => {
+      const formValues = form.getValues()
+      uploadVideoMutation.mutate({ ...formValues, url: response.uploadURL, projectId, fileId: response.body.id })
+    },
+    [form, projectId, uploadVideoMutation],
   )
 
   const { uppy } = useUppyUpload({
     onUploadComplete: handleSubmit,
   })
 
-  const triggerFileUpload = () => {
-    uppy.upload()
-  }
-
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button icon={<UploadIcon />}>Upload Video</Button>
       </DialogTrigger>
       <DialogContent className="w-full max-w-screen-sm">
@@ -97,7 +81,7 @@ export default function UploadVideoModal({ projectId }: UploadVideoModalProps) {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(triggerFileUpload)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(() => uppy.upload())} className="space-y-4">
             <FormField
               control={form.control}
               name="title"
@@ -115,7 +99,6 @@ export default function UploadVideoModal({ projectId }: UploadVideoModalProps) {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="description"
