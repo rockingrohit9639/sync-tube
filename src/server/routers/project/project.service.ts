@@ -21,7 +21,9 @@ export async function createProject(prisma: PrismaClient, dto: z.infer<typeof cr
 }
 
 export async function findUserProjects(prisma: PrismaClient, session: Session) {
-  const userProjects = await prisma.project.findMany({ where: { admin: { id: session.user.id } } })
+  const userProjects = await prisma.project.findMany({
+    where: { OR: [{ admin: { id: session.user.id } }, { members: { some: { id: session.user.id } } }] },
+  })
 
   return userProjects.map((project) => {
     let onGoingStatus: OnGoingStatus
@@ -81,6 +83,15 @@ export async function updateProject(prisma: PrismaClient, dto: z.infer<typeof up
       description: dto.description,
       deadline: dto.deadline,
       status: dto.status,
+    },
+  })
+}
+
+export async function addProjectMember(prisma: PrismaClient, projectId: string, memberId: string) {
+  return prisma.project.update({
+    where: { id: projectId },
+    data: {
+      members: { connect: { id: memberId } },
     },
   })
 }
