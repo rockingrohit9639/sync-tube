@@ -5,6 +5,7 @@ import { TRPCError } from '@trpc/server'
 import { PrismaClient } from '@prisma/client'
 import { createProjectSchema, updateProjectSchema } from './project.schema'
 import { OnGoingStatus } from '~/types/project'
+import { PROJECT_INCLUDE_FIELDS } from './project.fields'
 
 export async function createProject(prisma: PrismaClient, dto: z.infer<typeof createProjectSchema>, session: Session) {
   return prisma.project.create({
@@ -23,6 +24,7 @@ export async function createProject(prisma: PrismaClient, dto: z.infer<typeof cr
 export async function findUserProjects(prisma: PrismaClient, session: Session) {
   const userProjects = await prisma.project.findMany({
     where: { OR: [{ admin: { id: session.user.id } }, { members: { some: { id: session.user.id } } }] },
+    include: PROJECT_INCLUDE_FIELDS,
   })
 
   return userProjects.map((project) => {

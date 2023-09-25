@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client'
-import Avatar from '~/components/avatar'
 import { Button } from '~/components/ui/button'
 import { useToast } from '~/components/ui/use-toast'
+import UserInfo from '~/components/user-info'
 import { useError } from '~/hooks/use-error'
 import { trpc } from '~/lib/trpc/client'
 import { cn } from '~/lib/utils/utils'
@@ -37,13 +37,7 @@ export default function Invitation({ className, style, invitation }: InvitationP
   return (
     <div className={cn('space-y-4 rounded-md border p-4 hover:border-white/50', className)} style={style}>
       <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <Avatar src={invitation.inviter.image!}>{invitation.inviter.name?.[0]}</Avatar>
-          <div>
-            <div className="text-lg font-bold">{invitation.inviter.name}</div>
-            <div className="text-sm text-slate-500">{invitation.inviter.email}</div>
-          </div>
-        </div>
+        <UserInfo user={invitation.inviter} />
         invited you to work on the project &lsquo;
         <span className="text-lg font-bold">{invitation.project.name}</span>&rsquo;
       </div>
