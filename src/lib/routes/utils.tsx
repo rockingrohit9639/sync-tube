@@ -17,8 +17,8 @@ export const ROUTES: Route[] = [
     path: '/contact-us',
   },
   {
-    id: 'teams',
-    name: 'Teams',
-    path: '/teams',
+    id: 'invitations',
+    name: 'Invitations',
+    path: '/invitations',
   },
 ]
