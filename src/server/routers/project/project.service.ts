@@ -97,3 +97,11 @@ export async function addProjectMember(prisma: PrismaClient, projectId: string, 
     },
   })
 }
+
+export async function findProjectWithMembers(prisma: PrismaClient, id: string) {
+  const project = await prisma.project.findFirst({ where: { id }, include: { members: true } })
+  if (!project) {
+    throw new TRPCError({ code: 'NOT_FOUND', message: 'Project not found!' })
+  }
+  return project
+}

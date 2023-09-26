@@ -5,13 +5,22 @@ import { PrismaClient } from '@prisma/client'
 import { TRPCError } from '@trpc/server'
 import { google } from 'googleapis'
 import { updateVideoStatusSchema, uploadVideoSchema } from './video.schema'
-import { findProjectById } from '../project/project.service'
+import { findProjectById, findProjectWithMembers } from '../project/project.service'
 import { VIDEO_INCLUDE_FIELDS } from './video.fields'
 import { env } from '~/lib/utils/env.mjs'
 
 const OAuth2 = google.auth.OAuth2
 
 export async function uploadVideo(prisma: PrismaClient, dto: z.infer<typeof uploadVideoSchema>, session: Session) {
+  /** Only an admin or project members can upload the video */
+  const project = await findProjectWithMembers(prisma, dto.projectId)
+  if (project.adminId !== session.user.id || !project.members.find((member) => member.id === session.user.id)) {
+    throw new TRPCError({
+      code: 'BAD_REQUEST',
+      message: 'Only admin or members can upload video in a project!',
+    })
+  }
+
   return prisma.video.create({
     data: {
       title: dto.title,
