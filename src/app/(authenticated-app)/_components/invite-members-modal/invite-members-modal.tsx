@@ -3,6 +3,7 @@ import { Mail, Send } from 'lucide-react'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import Tooltip from '~/components/tooltip'
 import { Button } from '~/components/ui/button'
 import {
   Dialog,
@@ -38,6 +39,7 @@ export default function InviteMembersModal({ className, style, projectId }: Invi
   const [isOpen, setIsOpen] = useState(false)
   const { handleError } = useError()
   const { toast } = useToast()
+  const utils = trpc.useContext()
 
   const form = useForm<z.infer<typeof createInvitationSchema>>({
     resolver: zodResolver(createInvitationSchema.omit({ project: true })),
@@ -47,9 +49,9 @@ export default function InviteMembersModal({ className, style, projectId }: Invi
   const inviteMemberMutation = trpc.invitations.create.useMutation({
     onError: handleError,
     onSuccess: () => {
+      utils.users.findMembersToInvite.invalidate()
       form.reset()
       toast({
-        type: 'background',
         title: 'Invitation sent successfully!',
       })
       setIsOpen(false)
@@ -62,9 +64,11 @@ export default function InviteMembersModal({ className, style, projectId }: Invi
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button icon={<Mail />}>Invite Member</Button>
-      </DialogTrigger>
+      <Tooltip content="Invite Members">
+        <DialogTrigger asChild>
+          <Button variant="outline" icon={<Mail />} />
+        </DialogTrigger>
+      </Tooltip>
       <DialogContent className={cn('w-full max-w-screen-sm', className)} style={style}>
         <DialogHeader>
           <DialogTitle>Invite a member</DialogTitle>

@@ -8,10 +8,10 @@ import { Session } from 'next-auth'
 export async function findMembersToInvite(prisma: PrismaClient, projectId: string, session: Session) {
   return prisma.user.findMany({
     where: {
-      OR: [
+      AND: [
         { id: { not: session.user.id } },
-        { receivedInvitations: { some: { projectId: { not: projectId } } } },
-        { projectsJoined: { some: { id: { not: projectId } } } },
+        { projectsJoined: { none: { id: projectId } } },
+        { receivedInvitations: { none: { projectId } } },
       ],
     },
   })

@@ -8,6 +8,7 @@ import { useCallback, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import DatePicker from '~/components/date-picker'
+import Tooltip from '~/components/tooltip'
 import { Button } from '~/components/ui/button'
 import {
   Dialog,
@@ -73,11 +74,11 @@ export default function UpdateProjectModal({ project }: UpdateProjectModalProps)
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger>
-        <Button variant="outline" icon={<Edit />} className="h-full">
-          Update Project
-        </Button>
-      </DialogTrigger>
+      <Tooltip content="Update Project">
+        <DialogTrigger asChild>
+          <Button variant="outline" icon={<Edit />} />
+        </DialogTrigger>
+      </Tooltip>
       <DialogContent className="w-full max-w-screen-sm">
         <DialogHeader>
           <DialogTitle>Update project</DialogTitle>

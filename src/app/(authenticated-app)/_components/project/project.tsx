@@ -18,7 +18,7 @@ type ProjectProps = {
   index: number
 }
 
-export default async function Project({ classNacme, style, project, index }: ProjectProps) {
+export default async function Project({ className, style, project, index }: ProjectProps) {
   const session = await getSession()
 
   return (
