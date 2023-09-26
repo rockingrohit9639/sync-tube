@@ -16,3 +16,14 @@ export async function findMembersToInvite(prisma: PrismaClient, projectId: strin
     },
   })
 }
+
+/**
+ * The users who have joined any of the projects of current logged in user
+ */
+export async function findTeamMembers(prisma: PrismaClient, session: Session) {
+  return prisma.user.findMany({
+    where: {
+      AND: [{ id: { not: session.user.id } }, { projectsJoined: { some: { adminId: session.user.id } } }],
+    },
+  })
+}
