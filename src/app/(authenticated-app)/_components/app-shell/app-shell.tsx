@@ -37,7 +37,7 @@ export default function AppShell({ className, style, children }: AppShellProps) 
 
   return (
     <div className={cn(className)} style={style}>
-      <div className="fixed left-0 top-0 h-16 w-full border-b bg-black/10 px-4 backdrop-blur-lg">
+      <div className="fixed left-0 top-0 h-16 w-full border-b bg-background px-4 backdrop-blur-lg">
         <div className="mx-auto flex h-full max-w-screen-xl items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Image src="/logo.png" alt="logo" width={50} height={50} />
@@ -48,8 +48,8 @@ export default function AppShell({ className, style, children }: AppShellProps) 
               <NavLink
                 key={route.id}
                 href={route.path}
-                className="rounded bg-transparent px-4 py-2 transition-all duration-100 hover:bg-primary hover:text-slate-950"
-                activeClassName="text-slate-950 bg-primary"
+                className="rounded px-4 py-2 transition-all duration-100 hover:bg-primary hover:text-primary-foreground"
+                activeClassName="text-primary-foreground bg-primary"
               >
                 {route.name}
               </NavLink>

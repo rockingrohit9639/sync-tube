@@ -63,7 +63,7 @@ export default function ProjectDetails() {
       </div>
 
       <Separator className="my-4" />
-      <div className="space-y-4 rounded-md bg-red-950/20 p-4">
+      <div className="space-y-4 rounded-md p-4">
         <div className="text-2xl font-bold text-red-500">Danger Zone</div>
 
         <div className="flex items-center justify-between gap-2 rounded-md border px-4 py-2">
