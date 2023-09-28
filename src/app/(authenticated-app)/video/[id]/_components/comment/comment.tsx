@@ -21,7 +21,7 @@ export default function Comment({ className, style, comment }: CommentProps) {
 
       <div className="space-y-2 border px-8 py-2">
         <UserInfo user={comment.createdBy} />
-        <div>{comment.content}</div>
+        <div dangerouslySetInnerHTML={{ __html: comment.content }} />
 
         <div className="text-sm text-muted-foreground">{dayjs(comment.createdAt).fromNow()}</div>
       </div>

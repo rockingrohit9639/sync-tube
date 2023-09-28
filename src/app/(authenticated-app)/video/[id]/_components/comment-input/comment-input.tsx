@@ -2,9 +2,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Send } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
+import TextEditor from '~/components/text-editor'
 import { Button } from '~/components/ui/button'
 import { Form, FormField, FormItem, FormMessage } from '~/components/ui/form'
-import { Input } from '~/components/ui/input'
 import { useError } from '~/hooks/use-error'
 import { trpc } from '~/lib/trpc/client'
 import { cn } from '~/lib/utils/utils'
@@ -52,12 +52,7 @@ export default function CommentInput({ className, style, videoId }: CommentInput
             name="content"
             render={({ field }) => (
               <FormItem className="flex-1">
-                <Input
-                  className="border-none focus-visible:ring-0"
-                  placeholder="Write your comment here..."
-                  disabled={createCommentMutation.isLoading}
-                  {...field}
-                />
+                <TextEditor className="border px-4 py-2" placeholder="Write your comment here..." {...field} />
                 <FormMessage />
               </FormItem>
             )}
