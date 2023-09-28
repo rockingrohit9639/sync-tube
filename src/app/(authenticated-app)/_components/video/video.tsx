@@ -34,8 +34,9 @@ export default function Video({ className, style, video }: VideoProps) {
           {session?.user.id === video.uploadedById ? 'You' : video.uploadedBy.name} uploaded this video.
         </div>
       </div>
-      <div className="flex flex-grow flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Button
+          className="flex-grow"
           icon={<View />}
           onClick={() => {
             router.push(`/video/${video.id}`)
@@ -44,7 +45,7 @@ export default function Video({ className, style, video }: VideoProps) {
           View
         </Button>
 
-        {session?.user.id === video.project.adminId ? <UpdateVideoStatus video={video} /> : null}
+        {session?.user.id === video.project.adminId ? <UpdateVideoStatus className="flex-grow" video={video} /> : null}
 
         <DeleteVideo
           id={video.id}
@@ -55,7 +56,7 @@ export default function Video({ className, style, video }: VideoProps) {
           }
         />
         <div
-          className="w-max rounded border px-2 py-1 text-center text-sm opacity-50"
+          className="w-max flex-grow rounded border px-2 py-1 text-center text-sm opacity-50"
           style={{ borderColor: statusColor, color: statusColor }}
         >
           {formatEnum(video.status)}

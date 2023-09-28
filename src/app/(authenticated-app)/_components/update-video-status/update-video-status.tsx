@@ -66,7 +66,7 @@ export default function UpdateVideoStatus({ className, style, video }: UpdateVid
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" icon={<Edit />}>
+        <Button variant="outline" icon={<Edit />} className="flex-grow">
           Update Status
         </Button>
       </DialogTrigger>

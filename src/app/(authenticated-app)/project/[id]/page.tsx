@@ -73,7 +73,7 @@ export default function ProjectDetails() {
       <Separator className="my-4" />
 
       <div className="grid min-h-[60vh] grid-cols-3 gap-4">
-        <div className="lg:col-span-2">
+        <div className="col-span-full lg:col-span-2">
           <div className="mb-2">Total Uploaded Videos ({videos?.length ?? 0})</div>
           {videos?.map((video) => <Video key={video.id} video={video} />)}
         </div>
