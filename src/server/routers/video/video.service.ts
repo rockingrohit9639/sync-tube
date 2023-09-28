@@ -43,7 +43,7 @@ export async function findProjectVideos(prisma: PrismaClient, projectId: string)
 }
 
 export async function findVideoById(prisma: PrismaClient, id: string) {
-  const video = await prisma.video.findFirst({ where: { id } })
+  const video = await prisma.video.findFirst({ where: { id }, include: VIDEO_INCLUDE_FIELDS })
   if (!video) {
     throw new TRPCError({ code: 'NOT_FOUND', message: 'Video not found' })
   }
