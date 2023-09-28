@@ -31,6 +31,7 @@ export default function Home() {
             <Project key={project.id} project={project} index={index} />
           ))}
         </div>
+
         <When truthy={session?.user?.role === 'YOUTUBER'}>
           <div className="hidden h-max rounded-md border lg:block">
             <div className="border-b p-4 text-lg">Team Members ({teamMembers?.length ?? 0})</div>

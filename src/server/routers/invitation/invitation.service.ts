@@ -8,14 +8,14 @@ import { addProjectMember } from '../project/project.service'
 
 export async function createInvitation(
   prisma: PrismaClient,
-  dto: z.infer<typeof createInvitationSchema>,
+  input: z.infer<typeof createInvitationSchema>,
   session: Session,
 ) {
   return prisma.invitation.create({
     data: {
       inviterId: session.user.id,
-      inviteeId: dto.invitee,
-      projectId: dto.project,
+      inviteeId: input.invitee,
+      projectId: input.project,
     },
   })
 }

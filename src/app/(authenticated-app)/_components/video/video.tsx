@@ -34,7 +34,7 @@ export default function Video({ className, style, video }: VideoProps) {
           {session?.user.id === video.uploadedById ? 'You' : video.uploadedBy.name} uploaded this video.
         </div>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex flex-grow flex-wrap items-center gap-2">
         <Button
           icon={<View />}
           onClick={() => {

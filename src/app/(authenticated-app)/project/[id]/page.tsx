@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { Minus } from 'lucide-react'
 import { Button } from '~/components/ui/button'
 import { Separator } from '~/components/ui/separator'
 import { useError } from '~/hooks/use-error'
@@ -10,12 +11,16 @@ import UpdateProjectModal from '../../_components/update-project-modal'
 import UploadVideoModal from '../../_components/upload-video-modal'
 import Video from '../../_components/video/video'
 import InviteMembersModal from '../../_components/invite-members-modal'
+import UserInfo from '~/components/user-info'
+import { useToast } from '~/components/ui/use-toast'
 
 export default function ProjectDetails() {
   const { id } = useParams() as { id: string }
   const router = useRouter()
   const { handleError } = useError()
   const { data: session } = useSession()
+  const utils = trpc.useContext()
+  const { toast } = useToast()
 
   const { data: project } = trpc.projects.findProjectById.useQuery({ id })
   const { data: videos } = trpc.videos.findProjectVideos.useQuery({ id })
@@ -30,6 +35,16 @@ export default function ProjectDetails() {
     onError: handleError,
     onSuccess: () => {
       router.replace('/')
+    },
+  })
+
+  const removeMemberMutation = trpc.projects.removeProjectMember.useMutation({
+    onError: handleError,
+    onSuccess: () => {
+      toast({
+        title: 'Member deleted successfully!',
+      })
+      utils.projects.findProjectById.invalidate()
     },
   })
 
@@ -57,11 +72,42 @@ export default function ProjectDetails() {
 
       <Separator className="my-4" />
 
-      <div className="min-h-[60vh] space-y-4">
-        <div className="mb-2">Total Uploaded Videos ({videos?.length ?? 0})</div>
-        {videos?.map((video) => <Video key={video.id} video={video} />)}
+      <div className="grid min-h-[60vh] grid-cols-3 gap-4">
+        <div className="lg:col-span-2">
+          <div className="mb-2">Total Uploaded Videos ({videos?.length ?? 0})</div>
+          {videos?.map((video) => <Video key={video.id} video={video} />)}
+        </div>
+        <div className="hidden lg:block">
+          <div className="mb-2">Project members ({project?.members?.length ?? 0})</div>
+          <div className="rounded-md border">
+            {project.members.map((member) => (
+              <UserInfo
+                key={member.id}
+                user={member}
+                className="cursor-pointer px-4 py-2 hover:bg-muted/40"
+                extraContent={
+                  <div className="flex justify-end">
+                    <Button
+                      variant="destructive-outline"
+                      size="sm"
+                      icon={<Minus />}
+                      onClick={() => {
+                        removeMemberMutation.mutate({ member: member.id, project: project.id })
+                      }}
+                      disabled={removeMemberMutation.isLoading}
+                      loading={removeMemberMutation.isLoading}
+                    >
+                      Remove Member
+                    </Button>
+                  </div>
+                }
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
+      {/* Danger Zone */}
       <Separator className="my-4" />
       <div className="space-y-4 rounded-md p-4">
         <div className="text-2xl font-bold text-red-500">Danger Zone</div>

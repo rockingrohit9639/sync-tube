@@ -19,7 +19,7 @@ export default function UserInfo({ className, style, user, extraContent }: UserI
           <div className="truncate text-sm text-muted-foreground">{user.email}</div>
         </div>
       </div>
-      <div>{extraContent}</div>
+      <>{extraContent}</>
     </div>
   )
 }

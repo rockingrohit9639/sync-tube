@@ -3,19 +3,23 @@ import { z } from 'zod'
 import dayjs from 'dayjs'
 import { TRPCError } from '@trpc/server'
 import { PrismaClient } from '@prisma/client'
-import { createProjectSchema, updateProjectSchema } from './project.schema'
+import { addProjectMemberSchema, createProjectSchema, updateProjectSchema } from './project.schema'
 import { OnGoingStatus } from '~/types/project'
 import { PROJECT_INCLUDE_FIELDS } from './project.fields'
 
-export async function createProject(prisma: PrismaClient, dto: z.infer<typeof createProjectSchema>, session: Session) {
+export async function createProject(
+  prisma: PrismaClient,
+  input: z.infer<typeof createProjectSchema>,
+  session: Session,
+) {
   return prisma.project.create({
     data: {
-      name: dto.name,
-      description: dto.description,
-      status: dto.status,
-      deadline: dto.deadline,
-      archivedOn: dto.archivedOn,
-      isArchive: dto.isArchive,
+      name: input.name,
+      description: input.description,
+      status: input.status,
+      deadline: input.deadline,
+      archivedOn: input.archivedOn,
+      isArchive: input.isArchive,
       admin: { connect: { id: session.user.id } },
     },
   })
@@ -47,7 +51,7 @@ export async function findUserProjects(prisma: PrismaClient, session: Session) {
 }
 
 export async function findProjectById(prisma: PrismaClient, id: string) {
-  const projectFound = await prisma.project.findFirst({ where: { id } })
+  const projectFound = await prisma.project.findFirst({ where: { id }, include: PROJECT_INCLUDE_FIELDS })
   if (!projectFound) {
     throw new TRPCError({ code: 'NOT_FOUND', message: 'Project not found!' })
   }
@@ -72,8 +76,12 @@ export async function deleteProject(prisma: PrismaClient, id: string, session: S
   return prisma.project.delete({ where: { id: project.id } })
 }
 
-export async function updateProject(prisma: PrismaClient, dto: z.infer<typeof updateProjectSchema>, session: Session) {
-  const project = await findProjectById(prisma, dto.id)
+export async function updateProject(
+  prisma: PrismaClient,
+  input: z.infer<typeof updateProjectSchema>,
+  session: Session,
+) {
+  const project = await findProjectById(prisma, input.id)
   if (project.adminId !== session.user.id) {
     throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to update this project!' })
   }
@@ -81,10 +89,10 @@ export async function updateProject(prisma: PrismaClient, dto: z.infer<typeof up
   return prisma.project.update({
     where: { id: project.id },
     data: {
-      name: dto.name,
-      description: dto.description,
-      deadline: dto.deadline,
-      status: dto.status,
+      name: input.name,
+      description: input.description,
+      deadline: input.deadline,
+      status: input.status,
     },
   })
 }
@@ -92,9 +100,7 @@ export async function updateProject(prisma: PrismaClient, dto: z.infer<typeof up
 export async function addProjectMember(prisma: PrismaClient, projectId: string, memberId: string) {
   return prisma.project.update({
     where: { id: projectId },
-    data: {
-      members: { connect: { id: memberId } },
-    },
+    data: { members: { connect: { id: memberId } } },
   })
 }
 
@@ -104,4 +110,20 @@ export async function findProjectWithMembers(prisma: PrismaClient, id: string) {
     throw new TRPCError({ code: 'NOT_FOUND', message: 'Project not found!' })
   }
   return project
+}
+
+export async function removeProjectMember(
+  prisma: PrismaClient,
+  input: z.infer<typeof addProjectMemberSchema>,
+  session: Session,
+) {
+  const project = await findProjectById(prisma, input.project)
+  if (project.adminId !== session.user.id) {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'You can not remove this member!' })
+  }
+
+  return prisma.project.update({
+    where: { id: input.project },
+    data: { members: { disconnect: { id: input.member } } },
+  })
 }

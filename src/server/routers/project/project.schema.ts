@@ -29,3 +29,8 @@ export const updateProjectSchema = z.object({
   deadline: z.date().optional(),
   status: projectStatus.optional(),
 })
+
+export const addProjectMemberSchema = z.object({
+  project: z.string(),
+  member: z.string(),
+})

@@ -11,9 +11,9 @@ import { env } from '~/lib/utils/env.mjs'
 
 const OAuth2 = google.auth.OAuth2
 
-export async function uploadVideo(prisma: PrismaClient, dto: z.infer<typeof uploadVideoSchema>, session: Session) {
+export async function uploadVideo(prisma: PrismaClient, input: z.infer<typeof uploadVideoSchema>, session: Session) {
   /** Only an admin or project members can upload the video */
-  const project = await findProjectWithMembers(prisma, dto.projectId)
+  const project = await findProjectWithMembers(prisma, input.projectId)
   if (project.adminId !== session.user.id || !project.members.find((member) => member.id === session.user.id)) {
     throw new TRPCError({
       code: 'BAD_REQUEST',
@@ -23,13 +23,13 @@ export async function uploadVideo(prisma: PrismaClient, dto: z.infer<typeof uplo
 
   return prisma.video.create({
     data: {
-      title: dto.title,
-      description: dto.description,
-      url: dto.url!,
+      title: input.title,
+      description: input.description,
+      url: input.url!,
       status: 'PENDING',
-      projectId: dto.projectId,
+      projectId: input.projectId,
       uploadedById: session.user.id,
-      fileId: dto.fileId,
+      fileId: input.fileId,
     },
   })
 }
@@ -123,17 +123,17 @@ async function uploadVideoToYoutube(prisma: PrismaClient, videoId: string, proje
 
 export async function updateVideoStatus(
   prisma: PrismaClient,
-  dto: z.infer<typeof updateVideoStatusSchema>,
+  input: z.infer<typeof updateVideoStatusSchema>,
   session: Session,
 ) {
-  const video = await findVideoById(prisma, dto.videoId)
+  const video = await findVideoById(prisma, input.videoId)
   const project = await findProjectById(prisma, video.projectId)
 
   if (project.adminId !== session.user.id) {
     throw new TRPCError({ code: 'FORBIDDEN', message: 'You are not allowed to update status for this video!' })
   }
 
-  const updatedVideo = await prisma.video.update({ where: { id: video.id }, data: { status: dto.status } })
+  const updatedVideo = await prisma.video.update({ where: { id: video.id }, data: { status: input.status } })
 
   /** If updated status is APPROVED then upload the video to youtube */
   await uploadVideoToYoutube(prisma, video.id, project, session.user)
