@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { redirect, usePathname } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { useTheme } from 'next-themes'
 import { ROUTES } from '~/lib/routes/utils'
 import { cn } from '~/lib/utils/utils'
 import NavLink from '../nav-link'
@@ -19,6 +20,7 @@ type AppShellProps = {
 
 export default function AppShell({ className, style, children }: AppShellProps) {
   const pathname = usePathname()
+  const { setTheme, theme } = useTheme()
 
   const { data, status } = useSession({
     required: true,
@@ -57,6 +59,13 @@ export default function AppShell({ className, style, children }: AppShellProps) 
 
             <Dropdown
               items={[
+                {
+                  id: 'theme',
+                  label: `Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`,
+                  onClick: () => {
+                    setTheme(theme === 'dark' ? 'light' : 'dark')
+                  },
+                },
                 {
                   id: 'logout',
                   label: 'Logout',

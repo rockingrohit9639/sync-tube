@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Montserrat } from 'next/font/google'
 import NextAuthProvider from '~/components/providers/next-auth-provider'
 import TrpcProvider from '~/components/providers/trpc-provider'
+import ThemeProvider from '~/components/theme-provider'
 import { Toaster } from '~/components/ui/toaster'
 
 const montserrat = Montserrat({ subsets: ['latin'] })
@@ -13,14 +14,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning className={montserrat.className}>
-        <TrpcProvider>
+        <ThemeProvider>
           <NextAuthProvider>
-            {children}
-            <Toaster />
+            <TrpcProvider>
+              {children}
+              <Toaster />
+            </TrpcProvider>
           </NextAuthProvider>
-        </TrpcProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
