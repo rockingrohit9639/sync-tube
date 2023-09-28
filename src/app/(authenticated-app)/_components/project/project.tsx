@@ -25,7 +25,7 @@ export default async function Project({ className, style, project, index }: Proj
     <Link
       href={`/project/${project.id}`}
       key={project.id}
-      className={cn('relative block space-y-2 rounded-md border px-4 py-2', className)}
+      className={cn('relative block space-y-2 rounded-md border px-4 py-2 hover:bg-muted/40', className)}
       style={style}
     >
       <When truthy={session?.user.id !== project.adminId}>
@@ -40,10 +40,10 @@ export default async function Project({ className, style, project, index }: Proj
         />
       ) : null}
 
-      <div className="absolute right-4 top-8 text-5xl font-bold text-gray-500/20">{index + 1}</div>
+      <div className="absolute right-4 top-8 text-5xl font-bold text-muted-foreground">{index + 1}</div>
 
       <div className="text-xl font-bold">{project.name}</div>
-      <div className="text-sm text-gray-500">{project.description}</div>
+      <div className="text-sm text-muted-foreground">{project.description}</div>
       <div className="mt-4 flex items-center gap-2">
         <div className="flex items-center gap-2 text-sm">
           <div>Started On</div>

@@ -25,5 +25,6 @@ export async function findTeamMembers(prisma: PrismaClient, session: Session) {
     where: {
       AND: [{ id: { not: session.user.id } }, { projectsJoined: { some: { adminId: session.user.id } } }],
     },
+    include: { projectsJoined: true },
   })
 }

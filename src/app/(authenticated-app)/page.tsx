@@ -35,7 +35,16 @@ export default function Home() {
           <div className="hidden h-max rounded-md border lg:block">
             <div className="border-b p-4 text-lg">Team Members ({teamMembers?.length ?? 0})</div>
             {teamMembers?.map((member) => (
-              <UserInfo key={member.id} user={member} className="cursor-pointer px-4 py-2 hover:bg-muted" />
+              <UserInfo
+                key={member.id}
+                user={member}
+                className="cursor-pointer px-4 py-2 hover:bg-muted/40"
+                extraContent={
+                  <div className="text-muted-foreground">
+                    Projects Joined - {member.projectsJoined.map((project) => project.name).join(', ')}
+                  </div>
+                }
+              />
             ))}
           </div>
         </When>

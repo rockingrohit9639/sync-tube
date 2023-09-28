@@ -6,16 +6,20 @@ type UserInfoProps = {
   className?: string
   style?: React.CSSProperties
   user: User
+  extraContent?: React.ReactNode
 }
 
-export default function UserInfo({ className, style, user }: UserInfoProps) {
+export default function UserInfo({ className, style, user, extraContent }: UserInfoProps) {
   return (
-    <div className={cn('flex items-center gap-2', className)} style={style}>
-      <Avatar src={user.image!}>{user.name?.[0]}</Avatar>
-      <div>
-        <div>{user.name}</div>
-        <div className="text-sm text-slate-500">{user.email}</div>
+    <div className={cn('space-y-2', className)} style={style}>
+      <div className="flex items-center gap-2">
+        <Avatar src={user.image!}>{user.name?.[0]}</Avatar>
+        <div>
+          <div>{user.name}</div>
+          <div className="truncate text-sm text-muted-foreground">{user.email}</div>
+        </div>
       </div>
+      <div>{extraContent}</div>
     </div>
   )
 }
