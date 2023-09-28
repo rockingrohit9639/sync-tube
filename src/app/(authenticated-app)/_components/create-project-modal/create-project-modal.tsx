@@ -3,7 +3,7 @@
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { Button } from '~/components/ui/button'
 import {
   Dialog,
@@ -59,12 +59,9 @@ export default function CreateProjectModal() {
 
   const isArchived = form.watch('isArchive')
 
-  const handleSubmit = useCallback(
-    (values: z.infer<typeof createProjectSchema>) => {
-      createProjectMutation.mutate(values)
-    },
-    [createProjectMutation],
-  )
+  const handleSubmit = (values: z.infer<typeof createProjectSchema>) => {
+    createProjectMutation.mutate(values)
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

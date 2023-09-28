@@ -55,6 +55,8 @@ model User {
   uploadedFiles       File[]
   sentInvitations     Invitation[] @relation(name: "SentInvitations")
   receivedInvitations Invitation[] @relation(name: "ReceivedInvitations")
+  comments            Comment[]    @relation(name: "CommentsCreated")
+  seenComments        Comment[]
 }
 
 model VerificationToken {
@@ -110,8 +112,9 @@ model Video {
   project      Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId    String
 
-  file   File?   @relation(fields: [fileId], references: [id])
-  fileId String? @unique
+  file    File?     @relation(fields: [fileId], references: [id])
+  fileId  String?   @unique
+  Comment Comment[]
 }
 
 model File {
@@ -143,4 +146,17 @@ model Invitation {
   // On which project the user is invided?
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId String
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  content   String
+
+  createdBy   User    @relation(name: "CommentsCreated", fields: [createdById], references: [id], onDelete: Cascade)
+  createdById String
+  video       Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  videoId     String?
+  seenBy      User[]
 }

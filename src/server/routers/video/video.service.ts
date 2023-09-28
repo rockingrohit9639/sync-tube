@@ -136,7 +136,9 @@ export async function updateVideoStatus(
   const updatedVideo = await prisma.video.update({ where: { id: video.id }, data: { status: input.status } })
 
   /** If updated status is APPROVED then upload the video to youtube */
-  await uploadVideoToYoutube(prisma, video.id, project, session.user)
+  if (updatedVideo.status === 'APPROVED') {
+    await uploadVideoToYoutube(prisma, video.id, project, session.user)
+  }
 
   return updatedVideo
 }

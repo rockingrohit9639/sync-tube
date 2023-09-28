@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation'
 import { match } from 'ts-pattern'
+import { useSession } from 'next-auth/react'
 import { Button } from '~/components/ui/button'
 import { ErrorMessage } from '~/components/ui/error-message'
 import { trpc } from '~/lib/trpc/client'
@@ -9,10 +10,13 @@ import { formatEnum } from '~/lib/utils/format'
 import { VIDEO_STATUS_COLOR_MAP } from '~/lib/utils/video'
 import UpdateVideoStatus from '../../_components/update-video-status'
 import { Separator } from '~/components/ui/separator'
+import When from '~/components/when'
+import Comments from './_components/comments'
 
 export default function VideDetails() {
   const { id } = useParams() as { id: string }
   const videoDetailsQuery = trpc.videos.findOneById.useQuery({ id }, { enabled: !!id })
+  const { data } = useSession()
 
   return match(videoDetailsQuery)
     .with({ status: 'loading' }, () => (
@@ -46,15 +50,19 @@ export default function VideDetails() {
               >
                 {formatEnum(video.status)}
               </Button>
-              <UpdateVideoStatus video={video} />
+              <When truthy={video.project.adminId === data?.user.id}>
+                <UpdateVideoStatus video={video} />
+              </When>
             </div>
           </div>
 
           <Separator className="my-4" />
 
-          <div className="border">
+          <div className="">
             {/* Video Player */}
-            <div className="flex h-96 items-center justify-center">Video box</div>
+            <div className="flex aspect-video items-center justify-center border">Video box</div>
+
+            <Comments videoId={video.id} />
           </div>
         </div>
       )
