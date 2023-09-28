@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from '~/components/ui/dialog'
 import { createProjectSchema } from '~/server/routers/project/project.schema'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
 import { Textarea } from '~/components/ui/textarea'
 import {
@@ -94,6 +94,7 @@ export default function CreateProjectModal() {
                       {...field}
                     />
                   </FormControl>
+                  <FormDescription>This name will be used as the title of your video on youtube.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -113,6 +114,7 @@ export default function CreateProjectModal() {
                       {...field}
                     />
                   </FormControl>
+                  <FormDescription>This will be used as the description for your youtube video.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

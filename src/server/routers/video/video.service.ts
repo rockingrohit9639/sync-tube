@@ -1,7 +1,7 @@
 import fs from 'fs'
 import { z } from 'zod'
 import { Session } from 'next-auth'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Project } from '@prisma/client'
 import { TRPCError } from '@trpc/server'
 import { google } from 'googleapis'
 import { updateVideoStatusSchema, uploadVideoSchema } from './video.schema'
@@ -61,9 +61,9 @@ export async function deleteVideo(prisma: PrismaClient, videoId: string, session
   return prisma.video.delete({ where: { id: videoId } })
 }
 
-async function uploadVideoToYoutube(prisma: PrismaClient, videoId: string, user: Session['user']) {
+async function uploadVideoToYoutube(prisma: PrismaClient, videoId: string, project: Project, user: Session['user']) {
   if (user.role !== 'YOUTUBER') {
-    throw new TRPCError({ code: 'BAD_REQUEST', message: 'Only a user can approve and upload video to youtube!' })
+    throw new TRPCError({ code: 'BAD_REQUEST', message: 'Only a youtuber can approve and upload video to youtube!' })
   }
 
   const video = await prisma.video.findFirst({ where: { id: videoId }, include: { file: true } })
@@ -104,8 +104,8 @@ async function uploadVideoToYoutube(prisma: PrismaClient, videoId: string, user:
       part: ['contentDetails', 'snippet', 'status'],
       requestBody: {
         snippet: {
-          title: video.title,
-          description: video.description,
+          title: project.name,
+          description: project.description,
         },
         status: {
           privacyStatus: 'private',
@@ -136,7 +136,7 @@ export async function updateVideoStatus(
   const updatedVideo = await prisma.video.update({ where: { id: video.id }, data: { status: dto.status } })
 
   /** If updated status is APPROVED then upload the video to youtube */
-  await uploadVideoToYoutube(prisma, video.id, session.user)
+  await uploadVideoToYoutube(prisma, video.id, project, session.user)
 
   return updatedVideo
 }
