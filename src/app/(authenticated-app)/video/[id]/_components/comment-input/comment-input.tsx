@@ -1,5 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Editor } from '@tiptap/react'
 import { Send } from 'lucide-react'
+import { useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
 import TextEditor from '~/components/text-editor'
@@ -21,6 +23,7 @@ type NewCommentSchema = Omit<z.infer<typeof createCommentSchema>, 'video'>
 export default function CommentInput({ className, style, videoId }: CommentInputProps) {
   const { handleError } = useError()
   const utils = trpc.useContext()
+  const editorRef = useRef<{ editor: Editor }>()
 
   const form = useForm<NewCommentSchema>({
     resolver: zodResolver(createCommentSchema.omit({ video: true })),
@@ -29,7 +32,7 @@ export default function CommentInput({ className, style, videoId }: CommentInput
   const createCommentMutation = trpc.comments.create.useMutation({
     onError: handleError,
     onSuccess: () => {
-      form.setValue('content', '')
+      editorRef.current?.editor.commands?.clearContent()
       utils.comments.findVideoComments.invalidate()
     },
   })
@@ -52,7 +55,12 @@ export default function CommentInput({ className, style, videoId }: CommentInput
             name="content"
             render={({ field }) => (
               <FormItem className="flex-1">
-                <TextEditor className="border px-4 py-2" placeholder="Write your comment here..." {...field} />
+                <TextEditor
+                  className="border px-4 py-2"
+                  placeholder="Write your comment here..."
+                  {...field}
+                  ref={editorRef}
+                />
                 <FormMessage />
               </FormItem>
             )}
