@@ -39,7 +39,7 @@ export default function AppShell({ className, style, children }: AppShellProps) 
 
   return (
     <div className={cn(className)} style={style}>
-      <div className="fixed left-0 top-0 h-16 w-full border-b bg-background px-4 backdrop-blur-lg">
+      <div className="fixed left-0 top-0 z-50 h-16 w-full border-b bg-background/20 px-4 backdrop-blur-lg">
         <div className="mx-auto flex h-full max-w-screen-xl items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <Image src="/logo.png" alt="logo" width={50} height={50} />
