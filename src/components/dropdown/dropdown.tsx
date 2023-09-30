@@ -1,6 +1,6 @@
 'use client'
 
-import { cloneElement } from 'react'
+import React, { cloneElement } from 'react'
 import { Slot } from '@radix-ui/react-slot'
 import {
   DropdownMenu,
@@ -11,17 +11,26 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
 
-type DropdownProps = {
-  children: React.ReactElement
-  label?: string | null
-  items: Array<{ id: string; label: React.ReactNode; onClick?: () => void }>
+type DropdownItem = {
+  id: string
+  label: React.ReactNode
+  onClick?: () => void
+  icon?: React.ReactElement<{ className?: string }>
 }
 
-export default function Dropdown({ children, label, items }: DropdownProps) {
+type DropdownProps = {
+  className?: string
+  style?: React.CSSProperties
+  children: React.ReactElement
+  label?: string | null
+  items: Array<DropdownItem>
+}
+
+export default function Dropdown({ className, style, children, label, items }: DropdownProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>{cloneElement(children)}</DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuTrigger asChild>{cloneElement(children)}</DropdownMenuTrigger>
+      <DropdownMenuContent className={className} style={style}>
         {label ? (
           <>
             <DropdownMenuLabel>{label}</DropdownMenuLabel>
@@ -36,7 +45,10 @@ export default function Dropdown({ children, label, items }: DropdownProps) {
             }}
             className="cursor-pointer"
           >
-            <DropdownMenuItem>{item.label}</DropdownMenuItem>
+            <DropdownMenuItem className="flex items-center justify-between gap-4">
+              <div>{item.label}</div>
+              {typeof item.icon !== 'undefined' ? cloneElement(item.icon, { className: 'w-4 h-4 opacity-80' }) : null}
+            </DropdownMenuItem>
           </Slot>
         ))}
       </DropdownMenuContent>
