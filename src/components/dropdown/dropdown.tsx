@@ -29,7 +29,7 @@ type DropdownProps = {
 export default function Dropdown({ className, style, children, label, items }: DropdownProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>{cloneElement(children)}</DropdownMenuTrigger>
+      <DropdownMenuTrigger>{cloneElement(children)}</DropdownMenuTrigger>
       <DropdownMenuContent className={className} style={style}>
         {label ? (
           <>

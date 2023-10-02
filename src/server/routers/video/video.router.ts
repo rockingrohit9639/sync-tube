@@ -1,7 +1,14 @@
 import { z } from 'zod'
 import { protectedProcedure, router, youtuberProcedure } from '~/server/trpc'
 import { updateVideoStatusSchema, uploadVideoSchema } from './video.schema'
-import { deleteVideo, findProjectVideos, findVideoById, updateVideoStatus, uploadVideo } from './video.service'
+import {
+  deleteVideo,
+  findProjectVideos,
+  findVideoById,
+  markVideoSeenByAdmin,
+  updateVideoStatus,
+  uploadVideo,
+} from './video.service'
 
 export const videoRouter = router({
   uploadVideo: protectedProcedure
@@ -23,4 +30,8 @@ export const videoRouter = router({
   findOneById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(({ input, ctx }) => findVideoById(ctx.prisma, input.id)),
+
+  markVideoSeenByAdmin: youtuberProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(({ input, ctx }) => markVideoSeenByAdmin(ctx.prisma, input.id, ctx.session)),
 })

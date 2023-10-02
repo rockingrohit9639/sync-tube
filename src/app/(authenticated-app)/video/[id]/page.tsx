@@ -15,8 +15,22 @@ import Comments from './_components/comments'
 
 export default function VideDetails() {
   const { id } = useParams() as { id: string }
-  const videoDetailsQuery = trpc.videos.findOneById.useQuery({ id }, { enabled: !!id })
   const { data } = useSession()
+
+  const seenByAdminMutation = trpc.videos.markVideoSeenByAdmin.useMutation()
+
+  const videoDetailsQuery = trpc.videos.findOneById.useQuery(
+    { id },
+    {
+      enabled: !!id,
+      onSuccess: (videoDetails) => {
+        /** Mark video as seen by admin */
+        if (videoDetails.project.adminId === data?.user.id && !videoDetails.seenByAdmin) {
+          seenByAdminMutation.mutate({ id })
+        }
+      },
+    },
+  )
 
   return match(videoDetailsQuery)
     .with({ status: 'loading' }, () => (

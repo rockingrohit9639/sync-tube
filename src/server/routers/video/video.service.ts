@@ -142,3 +142,11 @@ export async function updateVideoStatus(
 
   return updatedVideo
 }
+
+export async function markVideoSeenByAdmin(prisma: PrismaClient, id: string, session: Session) {
+  const video = await findVideoById(prisma, id)
+  if (video.project.adminId !== session.user.id) {
+    throw new TRPCError({ code: 'CONFLICT', message: 'Only set by an admin!' })
+  }
+  return prisma.video.update({ where: { id }, data: { seenByAdmin: true } })
+}
