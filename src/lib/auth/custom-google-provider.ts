@@ -27,8 +27,7 @@ export default function CustomGoogleProvider<P extends GoogleProfile>(
         prompt: 'consent',
         access_type: 'offline',
         response_type: 'code',
-        scope:
-          'openid email profile https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube',
+        scope: 'openid email profile https://www.googleapis.com/auth/youtube.upload',
       },
     },
     profile(profile: GoogleProfile) {

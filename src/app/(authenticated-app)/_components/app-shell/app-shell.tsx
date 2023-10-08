@@ -1,16 +1,15 @@
 'use client'
 
 import Image from 'next/image'
-import { redirect, usePathname } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
+import { useRouter } from 'next/navigation'
 import { ROUTES } from '~/lib/routes/utils'
 import { cn } from '~/lib/utils/utils'
 import NavLink from '../nav-link'
 import Avatar from '~/components/avatar'
 import Dropdown from '~/components/dropdown'
-import Loader from '~/components/loader'
 
 type AppShellProps = {
   className?: string
@@ -19,19 +18,9 @@ type AppShellProps = {
 }
 
 export default function AppShell({ className, style, children }: AppShellProps) {
-  const pathname = usePathname()
   const { setTheme, theme } = useTheme()
-
-  const { data, status } = useSession({
-    required: true,
-    onUnauthenticated() {
-      redirect(`/signin?callbackUrl=${pathname}`)
-    },
-  })
-
-  if (status === 'loading') {
-    return <Loader title="Fetching session..." />
-  }
+  const { data } = useSession()
+  const router = useRouter()
 
   if (!data) {
     return null
@@ -46,16 +35,20 @@ export default function AppShell({ className, style, children }: AppShellProps) 
             <div className="font-bold">SyncTube</div>
           </Link>
           <div className="flex items-center gap-4">
-            {ROUTES.map((route) => (
-              <NavLink
-                key={route.id}
-                href={route.path}
-                className="rounded px-4 py-2 transition-all duration-100 hover:bg-primary hover:text-primary-foreground"
-                activeClassName="text-primary-foreground bg-primary"
-              >
-                {route.name}
-              </NavLink>
-            ))}
+            {ROUTES.map((route) =>
+              route.type === 'NAV' ? (
+                <NavLink
+                  key={route.id}
+                  href={route.path}
+                  className="rounded px-4 py-2 transition-all duration-100 hover:bg-primary hover:text-primary-foreground"
+                  activeClassName="text-primary-foreground bg-primary"
+                >
+                  {route.name}
+                </NavLink>
+              ) : (
+                route.item(router.push, theme)
+              ),
+            )}
 
             <Dropdown
               items={[

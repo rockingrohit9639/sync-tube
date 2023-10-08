@@ -108,7 +108,12 @@ export default function InviteMembersModal({ className, style, projectId }: Invi
               )}
             />
 
-            <Button type="submit" icon={<Send />}>
+            <Button
+              type="submit"
+              icon={<Send />}
+              loading={inviteMemberMutation.isLoading}
+              disabled={inviteMemberMutation.isLoading}
+            >
               Send Invite
             </Button>
           </form>
