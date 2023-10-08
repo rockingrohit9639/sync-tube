@@ -13,6 +13,7 @@ import Video from '../../_components/video/video'
 import InviteMembersModal from '../../_components/invite-members-modal'
 import UserInfo from '~/components/user-info'
 import { useToast } from '~/components/ui/use-toast'
+import When from '~/components/when'
 
 export default function ProjectDetails() {
   const { id } = useParams() as { id: string }
@@ -86,20 +87,22 @@ export default function ProjectDetails() {
                 user={member}
                 className="cursor-pointer px-4 py-2 hover:bg-muted/40"
                 extraContent={
-                  <div className="flex justify-end">
-                    <Button
-                      variant="destructive-outline"
-                      size="sm"
-                      icon={<Minus />}
-                      onClick={() => {
-                        removeMemberMutation.mutate({ member: member.id, project: project.id })
-                      }}
-                      disabled={removeMemberMutation.isLoading}
-                      loading={removeMemberMutation.isLoading}
-                    >
-                      Remove Member
-                    </Button>
-                  </div>
+                  <When truthy={project.adminId === session?.user?.id}>
+                    <div className="flex justify-end">
+                      <Button
+                        variant="destructive-outline"
+                        size="sm"
+                        icon={<Minus />}
+                        onClick={() => {
+                          removeMemberMutation.mutate({ member: member.id, project: project.id })
+                        }}
+                        disabled={removeMemberMutation.isLoading}
+                        loading={removeMemberMutation.isLoading}
+                      >
+                        Remove Member
+                      </Button>
+                    </div>
+                  </When>
                 }
               />
             ))}

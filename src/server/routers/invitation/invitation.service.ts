@@ -5,19 +5,33 @@ import { TRPCError } from '@trpc/server'
 import { createInvitationSchema } from './invitation.schema'
 import { INVITATION_INCLUDE_FIELDS } from './invitation.fields'
 import { addProjectMember } from '../project/project.service'
+import { novuClient } from '~/lib/novu/client'
+import { env } from '~/lib/utils/env.mjs'
 
 export async function createInvitation(
   prisma: PrismaClient,
   input: z.infer<typeof createInvitationSchema>,
   session: Session,
 ) {
-  return prisma.invitation.create({
+  const createdInvitation = await prisma.invitation.create({
     data: {
       inviterId: session.user.id,
       inviteeId: input.invitee,
       projectId: input.project,
     },
+    include: { inviter: true, project: true },
   })
+
+  /** Send notification */
+  await novuClient.trigger(env.NOVU_WORKFLOW_ID, {
+    to: { subscriberId: createdInvitation.inviteeId },
+    payload: {
+      inviterName: createdInvitation.inviter.name!,
+      projectName: createdInvitation.project.name,
+    },
+  })
+
+  return createdInvitation
 }
 
 export async function findReceivedInvitations(prisma: PrismaClient, session: Session) {
