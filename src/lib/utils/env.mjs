@@ -11,6 +11,10 @@ export const env = createEnv({
     GOOGLE_YOUTUBE_REDIRECT_URI: z.string().url(),
     GOOGLE_EDITOR_REDIRECT_URI: z.string().url(),
     UPLOAD_DIR: z.string(),
+    NOVU_API_KEY: z.string(),
+    NOVU_APPLICATION_ID: z.string(),
+    NOVU_ENV_ID: z.string(),
+    NOVU_WORKFLOW_ID: z.string(),
   },
   client: {
     // NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
@@ -29,6 +33,10 @@ export const env = createEnv({
     // NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     // NEXT_PUBLIC_SUPABASE_BUCKET: process.env.NEXT_PUBLIC_SUPABASE_BUCKET,
     UPLOAD_DIR: process.env.UPLOAD_DIR,
+    NOVU_API_KEY: process.env.NOVU_API_KEY,
+    NOVU_APPLICATION_ID: process.env.NOVU_APPLICATION_ID,
+    NOVU_ENV_ID: process.env.NOVU_ENV_ID,
+    NOVU_WORKFLOW_ID: process.env.NOVU_WORKFLOW_ID,
   },
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
 })

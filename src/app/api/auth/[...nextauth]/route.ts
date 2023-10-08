@@ -4,6 +4,8 @@ import { PrismaAdapter } from '@auth/prisma-adapter'
 import { UserRole } from '@prisma/client'
 import CustomGoogleProvider from '~/lib/auth/custom-google-provider'
 import { prisma } from '~/server/db'
+import { addNovuSubscriber } from '~/lib/novu/client'
+import { env } from '~/lib/utils/env.mjs'
 
 declare module 'next-auth' {
   interface Session {
@@ -34,19 +36,27 @@ export const authOptions: NextAuthOptions = {
         },
       }
     },
+    signIn: async ({ user }) => {
+      /** Adding the user in novu subscribers to receive notifications */
+      if (user) {
+        await addNovuSubscriber(user)
+      }
+
+      return true
+    },
   },
   providers: [
     CustomGoogleProvider({
       id: 'youtube',
       name: 'Youtube',
       role: 'YOUTUBER',
-      redirect_uri: process.env.GOOGLE_YOUTUBE_REDIRECT_URI!,
+      redirect_uri: env.GOOGLE_YOUTUBE_REDIRECT_URI,
     }),
     CustomGoogleProvider({
       id: 'editor',
       name: 'Editor',
       role: 'EDITOR',
-      redirect_uri: process.env.GOOGLE_EDITOR_REDIRECT_URI!,
+      redirect_uri: env.GOOGLE_EDITOR_REDIRECT_URI,
     }),
   ],
 }
