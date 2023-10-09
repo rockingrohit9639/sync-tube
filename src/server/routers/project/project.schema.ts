@@ -30,7 +30,7 @@ export const updateProjectSchema = z.object({
   status: projectStatus.optional(),
 })
 
-export const addProjectMemberSchema = z.object({
+export const removeProjectMemberSchema = z.object({
   project: z.string(),
   member: z.string(),
 })

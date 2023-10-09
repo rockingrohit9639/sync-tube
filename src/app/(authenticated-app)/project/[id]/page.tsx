@@ -2,7 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-import { Minus } from 'lucide-react'
+import { DoorOpen, Minus } from 'lucide-react'
 import { Button } from '~/components/ui/button'
 import { Separator } from '~/components/ui/separator'
 import { useError } from '~/hooks/use-error'
@@ -14,6 +14,7 @@ import InviteMembersModal from '../../_components/invite-members-modal'
 import UserInfo from '~/components/user-info'
 import { useToast } from '~/components/ui/use-toast'
 import When from '~/components/when'
+import Tooltip from '~/components/tooltip'
 
 export default function ProjectDetails() {
   const { id } = useParams() as { id: string }
@@ -49,6 +50,13 @@ export default function ProjectDetails() {
     },
   })
 
+  const leaveProjectMutation = trpc.projects.leaveProject.useMutation({
+    onError: handleError,
+    onSuccess: () => {
+      router.push('/')
+    },
+  })
+
   if (!project) {
     return null
   }
@@ -61,12 +69,23 @@ export default function ProjectDetails() {
           <div className="text-gray-500">{project.description}</div>
         </div>
         <div className="flex items-center gap-2">
-          {session?.user.id === project.adminId ? (
-            <>
-              <UpdateProjectModal project={project} />
-              <InviteMembersModal projectId={project.id} />
-            </>
-          ) : null}
+          <When truthy={session?.user.id === project.adminId}>
+            <UpdateProjectModal project={project} />
+            <InviteMembersModal projectId={project.id} />
+          </When>
+          <When truthy={Boolean(project.members.find((member) => member.id === session?.user.id))}>
+            <Tooltip content="Leave project">
+              <Button
+                icon={<DoorOpen />}
+                variant="outline"
+                onClick={() => {
+                  leaveProjectMutation.mutate({ project: project.id })
+                }}
+                loading={leaveProjectMutation.isLoading}
+                disabled={leaveProjectMutation.isLoading}
+              />
+            </Tooltip>
+          </When>
           <UploadVideoModal projectId={project.id} />
         </div>
       </div>

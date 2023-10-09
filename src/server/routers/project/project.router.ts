@@ -8,8 +8,9 @@ import {
   deleteProject,
   updateProject,
   removeProjectMember,
+  leaveProject,
 } from './project.service'
-import { addProjectMemberSchema, createProjectSchema, updateProjectSchema } from './project.schema'
+import { removeProjectMemberSchema, createProjectSchema, updateProjectSchema } from './project.schema'
 
 export const projectsRouter = router({
   createProject: youtuberProcedure
@@ -35,6 +36,10 @@ export const projectsRouter = router({
     .mutation(({ input, ctx }) => updateProject(ctx.prisma, input, ctx.session)),
 
   removeProjectMember: youtuberProcedure
-    .input(addProjectMemberSchema)
+    .input(removeProjectMemberSchema)
     .mutation(({ input, ctx }) => removeProjectMember(ctx.prisma, input, ctx.session)),
+
+  leaveProject: protectedProcedure
+    .input(z.object({ project: z.string() }))
+    .mutation(({ input, ctx }) => leaveProject(ctx.prisma, input.project, ctx.session)),
 })

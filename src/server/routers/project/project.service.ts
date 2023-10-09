@@ -3,7 +3,7 @@ import { z } from 'zod'
 import dayjs from 'dayjs'
 import { TRPCError } from '@trpc/server'
 import { PrismaClient } from '@prisma/client'
-import { addProjectMemberSchema, createProjectSchema, updateProjectSchema } from './project.schema'
+import { removeProjectMemberSchema, createProjectSchema, updateProjectSchema } from './project.schema'
 import { OnGoingStatus } from '~/types/project'
 import { PROJECT_INCLUDE_FIELDS } from './project.fields'
 
@@ -114,7 +114,7 @@ export async function findProjectWithMembers(prisma: PrismaClient, id: string) {
 
 export async function removeProjectMember(
   prisma: PrismaClient,
-  input: z.infer<typeof addProjectMemberSchema>,
+  input: z.infer<typeof removeProjectMemberSchema>,
   session: Session,
 ) {
   const project = await findProjectById(prisma, input.project)
@@ -125,5 +125,17 @@ export async function removeProjectMember(
   return prisma.project.update({
     where: { id: input.project },
     data: { members: { disconnect: { id: input.member } } },
+  })
+}
+
+export async function leaveProject(prisma: PrismaClient, projectId: string, session: Session) {
+  const project = await findProjectById(prisma, projectId)
+  if (!project.members.find((member) => member.id === session?.user.id)) {
+    throw new TRPCError({ code: 'BAD_REQUEST', message: 'You are not in the list of project members!' })
+  }
+
+  return prisma.project.update({
+    where: { id: project.id },
+    data: { members: { disconnect: { id: session.user.id } } },
   })
 }
