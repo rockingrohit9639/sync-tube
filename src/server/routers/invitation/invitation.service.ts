@@ -19,7 +19,7 @@ export async function createInvitation(
       inviteeId: input.invitee,
       projectId: input.project,
     },
-    include: { inviter: true, project: true },
+    include: { inviter: true, project: true, invitee: true },
   })
 
   /** Send notification */
@@ -28,6 +28,7 @@ export async function createInvitation(
     payload: {
       inviterName: createdInvitation.inviter.name!,
       projectName: createdInvitation.project.name,
+      inviteeName: createdInvitation.invitee.name!,
     },
   })
 

@@ -42,10 +42,10 @@ export default function ProjectDetails() {
   const removeMemberMutation = trpc.projects.removeProjectMember.useMutation({
     onError: handleError,
     onSuccess: () => {
+      utils.projects.findProjectById.invalidate()
       toast({
         title: 'Member deleted successfully!',
       })
-      utils.projects.findProjectById.invalidate()
     },
   })
 

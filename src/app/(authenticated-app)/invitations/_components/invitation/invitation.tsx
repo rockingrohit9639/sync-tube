@@ -22,6 +22,7 @@ export default function Invitation({ className, style, invitation }: InvitationP
     onError: handleError,
     onSuccess: () => {
       utils.invitations.findReceivedInvitations.invalidate()
+      utils.invitations.totalInvitations.invalidate()
       toast({ title: 'Invitation accepted successfully!', description: 'Now you can start working on the project!' })
     },
   })
@@ -30,6 +31,7 @@ export default function Invitation({ className, style, invitation }: InvitationP
     onError: handleError,
     onSuccess: () => {
       utils.invitations.findReceivedInvitations.invalidate()
+      utils.invitations.totalInvitations.invalidate()
       toast({ title: 'Invitation rejected successfully!' })
     },
   })
