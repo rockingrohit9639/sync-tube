@@ -1,7 +1,13 @@
 import { z } from 'zod'
 import { protectedProcedure, router, youtuberProcedure } from '~/server/trpc'
 import { createInvitationSchema } from './invitation.schema'
-import { acceptInvitation, createInvitation, findReceivedInvitations, rejectInvitation } from './invitation.service'
+import {
+  acceptInvitation,
+  createInvitation,
+  findReceivedInvitations,
+  getTotalInvitations,
+  rejectInvitation,
+} from './invitation.service'
 
 const invitationIdSchema = z.object({
   invitation: z.string(),
@@ -21,4 +27,6 @@ export const invitationRouter = router({
   reject: protectedProcedure
     .input(invitationIdSchema)
     .mutation(({ input, ctx }) => rejectInvitation(ctx.prisma, input.invitation, ctx.session)),
+
+  totalInvitations: protectedProcedure.query(({ ctx }) => getTotalInvitations(ctx.prisma, ctx.session)),
 })

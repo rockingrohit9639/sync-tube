@@ -10,7 +10,7 @@ type NavigationRoute = BaseRoute & {
 
 type NodeRoute = BaseRoute & {
   type: 'NODE'
-  item: (redirect: (path: string) => void, theme?: string) => React.ReactNode
+  item: React.ReactNode
 }
 
 export type Route = NavigationRoute | NodeRoute

@@ -71,3 +71,7 @@ export async function rejectInvitation(prisma: PrismaClient, id: string, session
 
   return prisma.invitation.delete({ where: { id: invitation.id } })
 }
+
+export async function getTotalInvitations(prisma: PrismaClient, session: Session) {
+  return prisma.invitation.count({ where: { inviteeId: session.user.id } })
+}

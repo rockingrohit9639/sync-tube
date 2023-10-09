@@ -4,12 +4,11 @@ import Image from 'next/image'
 import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
-import { useRouter } from 'next/navigation'
-import { ROUTES } from '~/lib/routes/utils'
 import { cn } from '~/lib/utils/utils'
 import NavLink from '../nav-link'
 import Avatar from '~/components/avatar'
 import Dropdown from '~/components/dropdown'
+import { useRoutes } from '~/hooks/use-routes'
 
 type AppShellProps = {
   className?: string
@@ -20,7 +19,7 @@ type AppShellProps = {
 export default function AppShell({ className, style, children }: AppShellProps) {
   const { setTheme, theme } = useTheme()
   const { data } = useSession()
-  const router = useRouter()
+  const routes = useRoutes()
 
   if (!data) {
     return null
@@ -35,7 +34,7 @@ export default function AppShell({ className, style, children }: AppShellProps) 
             <div className="font-bold">SyncTube</div>
           </Link>
           <div className="flex items-center gap-4">
-            {ROUTES.map((route) =>
+            {routes.map((route) =>
               route.type === 'NAV' ? (
                 <NavLink
                   key={route.id}
@@ -46,7 +45,7 @@ export default function AppShell({ className, style, children }: AppShellProps) 
                   {route.name}
                 </NavLink>
               ) : (
-                route.item(router.push, theme)
+                route.item
               ),
             )}
 
