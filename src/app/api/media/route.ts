@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'File is required!' }, { status: 400 })
     }
     /** @TODO Validate file constraints */
-    const basePath = `${process.cwd()}/public`
+    const basePath = process.cwd()
     const uploadDirectory = await getUploadDirectory(basePath, session.user.id)
 
     /** Saving the file into the UPLOAD_DIR */

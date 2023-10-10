@@ -74,7 +74,11 @@ export default function VideDetails() {
 
           <div className="">
             {/* Video Player */}
-            <div className="flex aspect-video items-center justify-center border">Video box</div>
+            <div className="flex aspect-video items-center justify-center border">
+              <video className="h-full w-full" controls>
+                <source src={`/api/media/${video.id}`} type="video/mp4" />
+              </video>
+            </div>
 
             <Comments videoId={video.id} />
           </div>

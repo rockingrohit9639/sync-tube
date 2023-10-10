@@ -112,9 +112,9 @@ model Video {
   project      Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId    String
 
-  file    File?     @relation(fields: [fileId], references: [id])
-  fileId  String?   @unique
-  Comment Comment[]
+  file     File?     @relation(fields: [fileId], references: [id])
+  fileId   String?   @unique
+  comments Comment[]
 }
 
 model File {
