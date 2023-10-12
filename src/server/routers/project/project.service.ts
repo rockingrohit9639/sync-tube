@@ -20,6 +20,7 @@ export async function createProject(
       deadline: input.deadline,
       archivedOn: input.archivedOn,
       isArchive: input.isArchive,
+      visibility: input.visibility,
       admin: { connect: { id: session.user.id } },
     },
   })
@@ -93,6 +94,7 @@ export async function updateProject(
       description: input.description,
       deadline: input.deadline,
       status: input.status,
+      visibility: input.visibility,
     },
   })
 }

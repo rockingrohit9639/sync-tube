@@ -1,3 +1,4 @@
+import { ProjectVisibility } from '@prisma/client'
 import * as z from 'zod'
 
 const projectStatus = z.enum(['ONGOING', 'DONE']).default('ONGOING')
@@ -10,6 +11,7 @@ export const createProjectSchema = z
     isArchive: z.boolean().default(false).optional(),
     archivedOn: z.date().optional(),
     status: projectStatus.optional(),
+    visibility: z.nativeEnum(ProjectVisibility).default(ProjectVisibility.PRIVATE),
   })
   .superRefine((values, ctx) => {
     if (values.isArchive) {
@@ -28,6 +30,7 @@ export const updateProjectSchema = z.object({
   description: z.string().max(4000).optional(),
   deadline: z.date().optional(),
   status: projectStatus.optional(),
+  visibility: z.nativeEnum(ProjectVisibility).optional(),
 })
 
 export const removeProjectMemberSchema = z.object({

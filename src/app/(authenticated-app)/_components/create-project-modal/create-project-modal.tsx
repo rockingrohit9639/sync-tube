@@ -40,6 +40,10 @@ export default function CreateProjectModal() {
 
   const form = useForm<z.infer<typeof createProjectSchema>>({
     resolver: zodResolver(createProjectSchema),
+    defaultValues: {
+      status: 'ONGOING',
+      visibility: 'PRIVATE',
+    },
   })
 
   const createProjectMutation = trpc.projects.createProject.useMutation({
@@ -124,7 +128,7 @@ export default function CreateProjectModal() {
                 <FormItem>
                   <FormLabel>Status</FormLabel>
                   <FormControl>
-                    <Select disabled={createProjectMutation.isLoading} {...field}>
+                    <Select disabled={createProjectMutation.isLoading} onValueChange={field.onChange} {...field}>
                       <SelectTrigger>
                         <SelectValue placeholder="Status of your project" />
                       </SelectTrigger>
@@ -137,6 +141,32 @@ export default function CreateProjectModal() {
                       </SelectContent>
                     </Select>
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="visibility"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project Visibility</FormLabel>
+                  <FormControl>
+                    <Select disabled={createProjectMutation.isLoading} onValueChange={field.onChange} {...field}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Visibility of your project" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Project Visibility</SelectLabel>
+                          <SelectItem value="PRIVATE">Private</SelectItem>
+                          <SelectItem value="PUBLIC">Public</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormDescription>Project made public will be visible globally.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

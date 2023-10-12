@@ -72,16 +72,22 @@ enum ProjectStatus {
   DONE
 }
 
+enum ProjectVisibility {
+  PRIVATE
+  PUBLIC
+}
+
 model Project {
-  id          String        @id @default(cuid())
+  id          String             @id @default(cuid())
   name        String
   description String
   deadline    DateTime?
-  isArchive   Boolean?      @default(false)
+  isArchive   Boolean?           @default(false)
   archivedOn  DateTime?
-  status      ProjectStatus @default(ONGOING)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  status      ProjectStatus      @default(ONGOING)
+  visibility  ProjectVisibility? @default(PRIVATE)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
 
   admin          User         @relation(fields: [adminId], references: [id], onDelete: Cascade, name: "ProjectAdmin")
   adminId        String

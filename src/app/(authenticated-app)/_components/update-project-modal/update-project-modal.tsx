@@ -50,6 +50,7 @@ export default function UpdateProjectModal({ project }: UpdateProjectModalProps)
       description: project.description ?? undefined,
       deadline: project.deadline ? dayjs(project.deadline).toDate() : undefined,
       status: project.status ?? undefined,
+      visibility: project.visibility ?? undefined,
     },
   })
 
@@ -142,6 +143,31 @@ export default function UpdateProjectModal({ project }: UpdateProjectModalProps)
                           <SelectLabel>Project Status</SelectLabel>
                           <SelectItem value="ONGOING">Ongoing</SelectItem>
                           <SelectItem value="DONE">Done</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="visibility"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Project Visibility</FormLabel>
+                  <FormControl>
+                    <Select disabled={updateProjectMutation.isLoading} onValueChange={field.onChange} {...field}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Visibility of your project" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Project Visibility</SelectLabel>
+                          <SelectItem value="PRIVATE">Private</SelectItem>
+                          <SelectItem value="PUBLIC">Public</SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>
